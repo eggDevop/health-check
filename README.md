@@ -11,9 +11,7 @@ Require this package in your `composer.json` and update composer. This will down
 {
     "require": {
         "php": ">=5.5.0",
-        "datenarong/health-check": "dev-master"
+        "eggdevop/health-check": "dev-master"
     }
 }
 ```
-
-*From: datenarong@gmail.com*
