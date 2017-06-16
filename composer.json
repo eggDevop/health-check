@@ -1,0 +1,26 @@
+{
+    "name": "eggdevop/health-check",
+    "description": "health check is monitor tool.",
+    "type": "project",
+    "license": "Apache License 2.0",
+    "keywords": [
+        "health",
+        "monitor"
+    ],
+    "authors": [{
+        "name": "EggDigital Dev2",
+        "email": "eggdigital@ascendcorp.com"
+    }],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.5.0"
+    },
+    "autoload": {
+        "classmap": [
+            "src/EggDigital/HealthCheck"
+        ],
+        "psr-0": {
+            "EggDigital\\HealthCheck\\": "src/"
+        }
+    }
+}
