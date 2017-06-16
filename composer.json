@@ -17,7 +17,8 @@
     },
     "autoload": {
         "classmap": [
-            "src/EggDigital/HealthCheck"
+            "src/EggDigital/HealthCheck",
+            "src/Ibmurai/PhpGearmanAdmin"
         ],
         "psr-0": {
             "EggDigital\\HealthCheck\\": "src/"
