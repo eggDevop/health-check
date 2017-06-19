@@ -5,7 +5,7 @@ class HealthCheck
 {
     public static function check($service)
     {
-        $classes = ['cassandra', 'file', 'gearman', 'mongo', 'mysql', 'oracle', 'redis', 'socket'];
+        $classes = ['cassandra', 'file', 'gearman', 'mongo', 'mysql', 'oracle', 'redis', 'socket', 'api'];
 
         if (in_array(strtolower($service), $classes)) {
             return Self::$service();
@@ -58,5 +58,10 @@ class HealthCheck
     private static function socket()
     {
         return new \EggDigital\HealthCheck\Classes\Socket;
+    }
+
+    private static function api()
+    {
+        return new \EggDigital\HealthCheck\Classes\Api;
     }
 }

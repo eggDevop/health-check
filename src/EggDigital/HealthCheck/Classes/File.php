@@ -17,11 +17,20 @@ class File extends Base
     // Method for check path file
     private function pathFileExists($path)
     {
-        if (is_dir($path)) {
-            return true;
-        } else {
+        if (!is_dir($path)) {
             return false;
         }
+
+        return true;
+    }
+
+    private function fileExists($file)
+    {
+        if (!is_file($file)) {
+            return false;
+        }
+
+        return true;
     }
 
     // Method for open file
@@ -35,25 +44,22 @@ class File extends Base
     // Get contents of file
     public function readFile($path, $file_name)
     {
-        try {
-            $this->outputs['service'] = 'Check Read File';
+        $this->outputs['service'] = 'Check Read File';
+        $this->outputs['url']     = $path;
 
+        try {
             $file = $path . '/' . $file_name;
 
             if (!$this->pathFileExists($path)) {
-                $this->outputs = [
-                    'status'  => 'ERROR',
-                    'remark'  => 'Path not found!'
-                ];
+                $this->outputs['status']  = 'ERROR';
+                $this->outputs['remark']  = 'Path not found!';
 
                 return $this;
             }
 
-            if (!is_file($file)) {
-                $this->outputs = [
-                    'status'  => 'ERROR',
-                    'remark'  => '404 File not found!'
-                ];
+            if (!$this->fileExists($file)) {
+                $this->outputs['status']  = 'ERROR';
+                $this->outputs['remark']  = '404 File not found!';
 
                 return $this;
             }
@@ -63,20 +69,16 @@ class File extends Base
             $contents = fread($file_handle, filesize($file));
 
             if (!$contents) {
-                $status = [
-                    'status' => 'ERROR',
-                    'remark'    => 'Can\'t read file'
-                ];
+                $this->outputs['status']  = 'ERROR';
+                $this->outputs['remark']  = 'Can\'t read file';
             }
 
             fclose($file_handle);
 
             return $this;
         } catch(Exception $e) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Can\'t read file : ' . $e->getMessage()
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Can\'t read file : ' . $e->getMessage();
         }
     }
 
@@ -201,21 +203,18 @@ class File extends Base
     public function compareFiles($path1, $path2, $file_name1, $file_name2)
     {
         $this->outputs['service'] = 'Check Compare File';
+        $this->outputs['url']     = 'Path 1 : ' . $path1 . ', Path 2 : ' . $path2;
 
         if (!$this->pathFileExists($path1)) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Path 1 not found!'
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Path 1 not found!';
 
             return $this;
         }
 
         if (!$this->pathFileExists($path2)) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Path 2 not found!'
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Path 2 not found!';
 
             return $this;
         }
@@ -223,31 +222,39 @@ class File extends Base
         $file1 = $path1 . '/' . $file_name1;
         $file2 = $path2 . '/' . $file_name2;
 
+        if (!$this->fileExists($file1)) {
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = '404 File 1 not found!';
+
+            return $this;
+        }
+
+        if (!$this->fileExists($file2)) {
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = '404 File 2 not found!';
+
+            return $this;
+        }
+
         try {
             if (filesize($file1) !== filesize($file2)) {
-                $this->outputs = [
-                    'status'  => 'ERROR',
-                    'remark'  => 'Size of file is not equal!'
-                ];
+                $this->outputs['status']  = 'ERROR';
+                $this->outputs['remark']  = 'Size of file is not equal!';
 
                 return $this;
             }
 
             if (md5_file($file1) !== md5_file($file2)) {
-                $this->outputs = [
-                    'status'  => 'ERROR',
-                    'remark'  => 'Content of file is not equal!'
-                ];
+                $this->outputs['status']  = 'ERROR';
+                $this->outputs['remark']  = 'Content of file is not equal!';
 
                 return $this;
             }
 
             return $this;
         } catch(Exception $e) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Can\'t compare file : ' . $e->getMessage()
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Can\'t compare file : ' . $e->getMessage();
         }
     }
 
@@ -255,12 +262,11 @@ class File extends Base
     public function writeFile($path)
     {
         $this->outputs['service'] = 'Check Write File';
+        $this->outputs['url']     = $path;
 
         if (!$this->pathFileExists($path)) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Path not found!'
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Path not found!';
 
             return $this;
         }
@@ -273,20 +279,16 @@ class File extends Base
             $written = fwrite($file_handle, "12345");
 
             if (!$written) {
-                $this->outputs = [
-                    'status'  => 'ERROR',
-                    'remark'  => 'Can\'t write file'
-                ];
+                $this->outputs['status']  = 'ERROR';
+                $this->outputs['remark']  = 'Can\'t write file';
             }
 
             fclose($file_handle);
 
             return $this;
         } catch(Exception $e) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Can\'t write file : ' . $e->getMessage()
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Can\'t write file : ' . $e->getMessage();
         }
     }
 

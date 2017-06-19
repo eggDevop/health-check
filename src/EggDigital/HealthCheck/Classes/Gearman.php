@@ -21,10 +21,8 @@ class Gearman extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs = [
-                'status' => 'ERROR',
-                'remark' => 'Require parameter (' . implode(',', $this->conf) . ')'
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->conf) . ')';
 
             return $this;
         }
@@ -35,16 +33,12 @@ class Gearman extends Base
             $this->gm_admin = new GearmanAdmin($conf['host'], $conf['port'], $conf['timeout']);
             // Check status gearman
             if (!$this->gm_admin->getStatus()) {
-                $this->outputs = [
-                    'status'  => 'ERROR',
-                    'remark'  => 'Can\'t connect to gearman'
-                ];
+                $this->outputs['status']  = 'ERROR';
+                $this->outputs['remark']  = 'Can\'t connect to gearman';
             }
         } catch (Exception $e) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Can\'t connect to gearman : ' . $e->getMessage()
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Can\'t connect to gearman : ' . $e->getMessage();
         }
 
         return $this;
@@ -55,10 +49,8 @@ class Gearman extends Base
     public function workerRunning()
     {
         if (!$this->gm_admin) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Can\'t connect to database'
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Can\'t connect to database';
 
             return $this;
         }
@@ -81,10 +73,8 @@ class Gearman extends Base
     public function totalQueue($max_job = 0)
     {
         if (!$this->gm_admin) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Can\'t connect to database'
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Can\'t connect to database';
 
             return $this;
         }

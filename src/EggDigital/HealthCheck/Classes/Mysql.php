@@ -21,10 +21,8 @@ class Mysql extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs = [
-                'status' => 'ERROR',
-                'remark' => 'Require parameter (' . implode(',', $this->conf) . ')'
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->conf) . ')';
 
             return $this;
         }
@@ -40,16 +38,12 @@ class Mysql extends Base
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             if (!$this->conn) {
-                $this->outputs = [
-                    'status'  => 'ERROR',
-                    'remark'  => 'Can\'t connect to database'
-                ];
+                $this->outputs['status']  = 'ERROR';
+                $this->outputs['remark']  = 'Can\'t connect to database';
             }
         } catch (PDOException $e) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Can\'t connect to database : ' . $e->getMessage()
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Can\'t connect to database : ' . $e->getMessage();
         }
 
         return $this;
@@ -60,10 +54,8 @@ class Mysql extends Base
         $this->outputs['service'] = 'Check Query Datas';
 
         if (!$this->conn) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Can\'t connect to database'
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Can\'t connect to database';
 
             return $this;
         }
@@ -72,10 +64,8 @@ class Mysql extends Base
         try {
             $this->conn->query($sql);
         } catch (PDOException  $e) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Can\'t query datas : ' . $e->getMessage()
-            ];
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Can\'t query datas : ' . $e->getMessage();
         }
 
         return $this;
