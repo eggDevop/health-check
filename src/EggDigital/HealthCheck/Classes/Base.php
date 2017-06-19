@@ -1,9 +1,7 @@
 <?php
 namespace EggDigital\HealthCheck\Classes;
 
-use EggDigital\HealthCheck\Interfaces\BaseInterface;
-
-abstract class Base implements BaseInterface
+abstract class Base
 {
     private $start_time;
     protected $conf;

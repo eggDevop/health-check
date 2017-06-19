@@ -1,6 +1,9 @@
 <?php
 namespace Ibmurai\PhpGearmanAdmin;
 
+use Ibmurai\PhpGearmanAdmin\GearmanAdminStatus;
+use Ibmurai\PhpGearmanAdmin\GearmanAdminWorker;
+use Ibmurai\PhpGearmanAdmin\GearmanAdminWorkers;
 /**
  * This file is part of the php-gearman-admin framework.
  * @link https://github.com/Ibmurai/php-gearman-admin
@@ -8,9 +11,9 @@ namespace Ibmurai\PhpGearmanAdmin;
  * @copyright Copyright 2012 Jens Riisom Schultz
  * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
-require_once dirname(__FILE__) . '/GearmanAdminStatus.php';
-require_once dirname(__FILE__) . '/GearmanAdminWorker.php';
-require_once dirname(__FILE__) . '/GearmanAdminWorkers.php';
+// require_once dirname(__FILE__) . '/GearmanAdminStatus.php';
+// require_once dirname(__FILE__) . '/GearmanAdminWorker.php';
+// require_once dirname(__FILE__) . '/GearmanAdminWorkers.php';
 /**
  * Query a gearman server to get the status of workers, jobs and functions, set max queue function settings or shut the server down.
  *
@@ -69,6 +72,7 @@ class GearmanAdmin
             stream_set_timeout($resource, 0, $this->_timeout * 1000);
             return $resource;
         }
+
     }
 
     /**

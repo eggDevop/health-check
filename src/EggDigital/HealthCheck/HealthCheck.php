@@ -14,10 +14,10 @@ class HealthCheck
         echo 'Class name does not exists';
     }
 
-    public static function output($datas)
+    public static function output($datas, $title = null)
     {
         $output = new \EggDigital\HealthCheck\Classes\Output;
-        return $output->html($datas);
+        return $output->html($datas, $title);
     }
 
     private static function cassandra()
