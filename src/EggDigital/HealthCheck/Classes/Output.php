@@ -31,7 +31,7 @@ class Output
 
     private function getTitle($title)
     {
-        return (!empty($title)) ? "<h2><{$title}/h2>" : '';
+        return (!empty($title)) ? "<h2>{$title}</h2>" : '';
     }
 
     private function getRows($datas)
