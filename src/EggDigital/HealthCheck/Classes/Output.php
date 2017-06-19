@@ -3,15 +3,16 @@ namespace EggDigital\HealthCheck\Classes;
 
 class Output
 {
-    public function html($datas)
+    public function html($datas, $title)
     {
-        return $this->getTable($datas);
+        return $this->getTable($datas, $title);
     }
 
-    private function getTable($datas)
+    private function getTable($datas, $title)
     {
         $html =
-            "<table id=\"responsive-example-table\" class=\"large-only\" cellspacing=\"0\">
+            $this->getTitle($title) .
+            "<table id=\"responsive-example-table\" class=\"large-only\" cellspacing=\"0\" style=\"margin-bottom:50px;\">
                 <tbody>
                     <tr align=\"left\">
                         <th width=\"12%\"></th>
@@ -26,6 +27,11 @@ class Output
             </table>";
 
         return $html;
+    }
+
+    private function getTitle($title)
+    {
+        return (!empty($title)) ? "<h2><{$title}/h2>" : '';
     }
 
     private function getRows($datas)
