@@ -1,53 +1,83 @@
 <?php
 namespace EggDigital\HealthCheck\Classes;
 
-use SplFileObject;
-
 class File extends Base
 {
     private $module = 'File';
     private $handle;
     private $file;
-    private $outputs = [];
     
-    public function __construct($file, $mode = 'rb')
+    public function __construct()
     {
-        $this->file = $file;
-        $this->handle = $this->openFile($mode);
+        parent::__construct();
+        
+        $this->outputs['module'] = 'File';
     }
 
-    private function openFile($mode)
+    // Method for check path file
+    private function pathFileExists($path)
     {
-        // First, see if the file exists
-        if (!is_file($this->file)) {
-            die('404 File not found!');
+        if (is_dir($path)) {
+            return true;
+        } else {
+            return false;
         }
+    }
 
-        return new SplFileObject($this->file, $mode);
+    // Method for open file
+    private function openFile($file, $mode)
+    {
+        $file_handle = fopen($file, $mode);
+
+        return $file_handle;
     }
 
     // Get contents of file
-    public function readFile()
+    public function readFile($path, $file_name)
     {
-        $status = [
-            'topic'   => 'CheckReadFile',
-            'module'  => $this->module,
-            'success' => true,
-            'desc'    => 'Read file success'
-        ];
+        try {
+            $this->outputs['service'] = 'Check Read File';
 
-        $contents = $this->handle->fread($this->handle->getSize());
+            $file = $path . '/' . $file_name;
 
-        if (!$contents) {
-            $status = [
-                'success' => false,
-                'desc'    => 'Can not read file'
+            if (!$this->pathFileExists($path)) {
+                $this->outputs = [
+                    'status'  => 'ERROR',
+                    'remark'  => 'Path not found!'
+                ];
+
+                return $this;
+            }
+
+            if (!is_file($file)) {
+                $this->outputs = [
+                    'status'  => 'ERROR',
+                    'remark'  => '404 File not found!'
+                ];
+
+                return $this;
+            }
+
+            $file_handle = $this->openFile($file, 'r');
+
+            $contents = fread($file_handle, filesize($file));
+
+            if (!$contents) {
+                $status = [
+                    'status' => 'ERROR',
+                    'remark'    => 'Can\'t read file'
+                ];
+            }
+
+            fclose($file_handle);
+
+            return $this;
+        } catch(Exception $e) {
+            $this->outputs = [
+                'status'  => 'ERROR',
+                'remark'  => 'Can\'t read file : ' . $e->getMessage()
             ];
         }
-        
-        $this->outputs[] = $status;
-
-        return $this->outputs;
     }
 
     public function deleteFile()
@@ -73,35 +103,35 @@ class File extends Base
         return $count;
     }
 
-    public function get($limit = null, $offset = 0)
-    {
-        if (empty($limit)) {
-            return $this->all();
-        }
+    // public function getData($limit = null, $offset = 0)
+    // {
+    //     if (empty($limit)) {
+    //         return $this->all();
+    //     }
 
-        // Get datas
-        $lines = [];
-        $i = 0;
-        while ($i < $limit) {
-            $this->handle->seek($offset + $i);
+    //     // Get datas
+    //     $lines = [];
+    //     $i = 0;
+    //     while ($i < $limit) {
+    //         $this->handle->seek($offset + $i);
 
-            // Fix bug end of file get content
-            if ($this->handle->eof()) {
-                $line = $this->handle->current();
-                if (!count($line) || empty($line)) {
-                    break;
-                }
-                $lines[] = trim($line.PHP_EOL);
-                return $lines;
-            }
+    //         // Fix bug end of file get content
+    //         if ($this->handle->eof()) {
+    //             $line = $this->handle->current();
+    //             if (!count($line) || empty($line)) {
+    //                 break;
+    //             }
+    //             $lines[] = trim($line.PHP_EOL);
+    //             return $lines;
+    //         }
 
-            $line = $this->handle->current();
-            $lines[] = trim($line.PHP_EOL);
-            ++$i;
-        }
+    //         $line = $this->handle->current();
+    //         $lines[] = trim($line.PHP_EOL);
+    //         ++$i;
+    //     }
 
-        return $lines;
-    }
+    //     return $lines;
+    // }
 
     public function all()
     {
@@ -168,24 +198,93 @@ class File extends Base
     }
 
     // Method for compare file
-    public function compareFiles($file1, $file2)
+    public function compareFiles($path1, $path2, $file_name1, $file_name2)
     {
-        // If empty not same
-        if (empty($file1)) {
-            return false;
+        $this->outputs['service'] = 'Check Compare File';
+
+        if (!$this->pathFileExists($path1)) {
+            $this->outputs = [
+                'status'  => 'ERROR',
+                'remark'  => 'Path 1 not found!'
+            ];
+
+            return $this;
         }
+
+        if (!$this->pathFileExists($path2)) {
+            $this->outputs = [
+                'status'  => 'ERROR',
+                'remark'  => 'Path 2 not found!'
+            ];
+
+            return $this;
+        }
+
+        $file1 = $path1 . '/' . $file_name1;
+        $file2 = $path2 . '/' . $file_name2;
+
+        if (filesize($file1) !== filesize($file2)) {
+            $this->outputs = [
+                'status'  => 'ERROR',
+                'remark'  => 'Size of file is not equal!'
+            ];
+
+            return $this;
+        }
+
+        if (md5_file($file1) !== md5_file($file2)) {
+            $this->outputs = [
+                'status'  => 'ERROR',
+                'remark'  => 'Content of file is not equal!'
+            ];
+
+            return $this;
+        }
+
+        return $this;
+    }
+
+    // Method for write file
+    public function writeFile($path)
+    {
+        $this->outputs['service'] = 'Check Write File';
+
+        if (!$this->pathFileExists($path)) {
+            $this->outputs = [
+                'status'  => 'ERROR',
+                'remark'  => 'Path not found!'
+            ];
+
+            return $this;
+        }
+
+        $file_name = 'TEST_' . date('Y-m-d') . '.txt';
+        $file = $path . '/' . $file_name;
+        $file_handle = $this->openFile($file, 'a');
         
-        foreach ($file1 as $file_name => $size) {
-            if (!isset($file2[$file_name])) {
-                // File lose
-                return false;
+        try {
+            $written = fwrite($file_handle, "12345");
+
+            if (!$written) {
+                $this->outputs = [
+                    'status'  => 'ERROR',
+                    'remark'  => 'Can\'t write file'
+                ];
             }
 
-            if ($file2[$file_name] != $size) {
-                // File size change
-                return false;
-            }
+            fclose($file_handle);
+
+            return $this;
+        } catch(Exception $e) {
+            $this->outputs = [
+                'status'  => 'ERROR',
+                'remark'  => 'Can\'t write file : ' . $e->getMessage()
+            ];
         }
-        return true;
+    }
+
+    public function __destruct()
+    {
+        parent::__destruct();
     }
 }
