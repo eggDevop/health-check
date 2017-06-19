@@ -1,18 +1,19 @@
 <?php
 namespace EggDigital\HealthCheck\Classes;
 
+use EggDigital\HealthCheck\Classes\Base;
 use PDO;
 
 class Mysql extends Base
 {
     private $conn;
 
-    public function __construct()
+    public function __construct($module_name = null)
     {
         parent::__construct();
-        
-        $this->outputs['module'] = 'Mysql';
-        $this->conf = ['host', 'username', 'password', 'dbname'];
+
+        $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Mysql';
+        $this->require_config = ['host', 'username', 'password', 'dbname'];
     }
 
     public function connect($conf)
@@ -22,7 +23,7 @@ class Mysql extends Base
         // Validate parameter
         if (false === $this->validParams($conf)) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->conf) . ')';
+            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
         }
@@ -39,11 +40,11 @@ class Mysql extends Base
 
             if (!$this->conn) {
                 $this->outputs['status']  = 'ERROR';
-                $this->outputs['remark']  = 'Can\'t connect to database';
+                $this->outputs['remark']  = 'Can\'t Connect to Database';
             }
         } catch (PDOException $e) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t connect to database : ' . $e->getMessage();
+            $this->outputs['remark']  = 'Can\'t Connect to Database : ' . $e->getMessage();
         }
 
         return $this;
@@ -55,7 +56,7 @@ class Mysql extends Base
 
         if (!$this->conn) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t connect to database';
+            $this->outputs['remark']  = 'Can\'t Connect to Database';
 
             return $this;
         }
@@ -65,7 +66,7 @@ class Mysql extends Base
             $this->conn->query($sql);
         } catch (PDOException  $e) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t query datas : ' . $e->getMessage();
+            $this->outputs['remark']  = 'Can\'t Query Datas : ' . $e->getMessage();
         }
 
         return $this;

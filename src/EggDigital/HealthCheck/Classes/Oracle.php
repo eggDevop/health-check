@@ -1,16 +1,18 @@
 <?php
 namespace EggDigital\HealthCheck\Classes;
 
+use EggDigital\HealthCheck\Classes\Base;
+
 class Oracle extends Base
 {
     private $conn;
 
-    public function __construct()
+    public function __construct($module_name = null)
     {
         parent::__construct();
 
-        $this->outputs['module'] = 'Oracle';
-        $this->conf = ['host', 'port', 'username', 'password', 'dbname', 'charset'];
+        $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Oracle';
+        $this->require_config = ['host', 'port', 'username', 'password', 'dbname', 'charset'];
     }
 
     public function connect($conf)
@@ -20,13 +22,13 @@ class Oracle extends Base
         // Validate parameter
         if (false === $this->validParams($conf)) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->conf) . ')';
+            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
         }
 
         // Set url
-        $this->outputs['url'] = $conf['host'];
+        $this->outputs['url'] = "{$conf['host']}:{$conf['port']}";
 
         try {
             // Connect to oracle
@@ -34,11 +36,11 @@ class Oracle extends Base
         
             if (!$this->conn) {
                 $this->outputs['status']  = 'ERROR';
-                $this->outputs['remark']  = 'Can\'t connect to database';
+                $this->outputs['remark']  = 'Can\'t Connect to Database';
             }
         } catch (Exception $e) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t connect to database : ' . $e->getMessage();
+            $this->outputs['remark']  = 'Can\'t Connect to Database : ' . $e->getMessage();
         }
 
         return $this;
@@ -50,7 +52,7 @@ class Oracle extends Base
 
         if (!$this->conn) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t connect to database';
+            $this->outputs['remark']  = 'Can\'t Connect to Database';
 
             return $this;
         }
@@ -63,11 +65,11 @@ class Oracle extends Base
 
             if (!$orc_exec) {
                 $this->outputs['status']  = 'ERROR';
-                $this->outputs['remark']  = 'Can\'t query datas';
+                $this->outputs['remark']  = 'Can\'t Query Datas';
             }
         } catch (\Exception $e) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t query datas : ' . $e->getMessage();
+            $this->outputs['remark']  = 'Can\'t Query Datas : ' . $e->getMessage();
         }
 
         return $this;

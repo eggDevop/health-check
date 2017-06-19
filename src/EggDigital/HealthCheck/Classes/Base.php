@@ -24,11 +24,11 @@ abstract class Base
         return $this->outputs;
     }
 
-    protected function validParams($conf)
+    protected function validParams($config)
     {
-        foreach ($this->conf as $k) {
-            // Check fix params
-            if (!isset($conf[$k])) {
+        foreach ($this->require_config as $param_name) {
+            // Checkey params is require
+            if (!isset($config[$param_name])) {
                 return false;
             }
         }

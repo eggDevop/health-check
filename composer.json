@@ -13,7 +13,12 @@
     }],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=5.5.0"
+        "php": ">=5.5.0",
+        "duoshuo/php-cassandra": "dev-master",
+        "predis/predis": "1.1.*"
+    },
+    "require-dev": {
+        "phpmd/phpmd": "2.6.*"
     },
     "autoload": {
         "classmap": [

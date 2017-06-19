@@ -1,18 +1,19 @@
 <?php
 namespace EggDigital\HealthCheck\Classes;
 
+use EggDigital\HealthCheck\Classes\Base;
 use Ibmurai\PhpGearmanAdmin\GearmanAdmin;
 
 class Gearman extends Base
 {
     private $gm_admin;
 
-    public function __construct()
+    public function __construct($module_name = null)
     {
         parent::__construct();
 
-        $this->outputs['module'] = 'Gearman';
-        $this->conf = ['host', 'port', 'timeout'];
+        $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Gearman';
+        $this->require_config = ['host', 'port'];
     }
 
     public function connect($conf)
@@ -22,23 +23,25 @@ class Gearman extends Base
         // Validate parameter
         if (false === $this->validParams($conf)) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->conf) . ')';
+            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
         }
+
         // Set url
         $this->outputs['url'] = $conf['host'];
 
         try {
-            $this->gm_admin = new GearmanAdmin($conf['host'], $conf['port'], $conf['timeout']);
+            $time_out = (isset($conf['timeout'])) ? $conf['timeout'] : 500;
+            $this->gm_admin = new GearmanAdmin($conf['host'], $conf['port'], $time_out);
             // Check status gearman
             if (!$this->gm_admin->getStatus()) {
                 $this->outputs['status']  = 'ERROR';
-                $this->outputs['remark']  = 'Can\'t connect to gearman';
+                $this->outputs['remark']  = 'Can\'t Connect to Gearman';
             }
         } catch (Exception $e) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t connect to gearman : ' . $e->getMessage();
+            $this->outputs['remark']  = 'Can\'t Connect to Gearman : ' . $e->getMessage();
         }
 
         return $this;
@@ -50,7 +53,7 @@ class Gearman extends Base
     {
         if (!$this->gm_admin) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t connect to database';
+            $this->outputs['remark']  = 'Can\'t Connect to Gearman';
 
             return $this;
         }
@@ -70,11 +73,11 @@ class Gearman extends Base
     }
 
     // Method for get total queue in german server
-    public function totalQueue($max_job = 0)
+    public function totalQueue($max_job = null)
     {
         if (!$this->gm_admin) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t connect to database';
+            $this->outputs['remark']  = 'Can\'t Connect to Gearman';
 
             return $this;
         }
@@ -85,10 +88,12 @@ class Gearman extends Base
 
         $total = $this->getNumberOfQueueFromStatusOutput($res);
 
-        $this->outputs['service'] .= '<br>Number of Queue : ' . $total;
+        $this->outputs['service'] .= "<br>Number of Queue : {$total}";
+        
         // Check Max Queue
-        if(!empty($max_job) && $total > $max_job){
-            $this->outputs['status'] = 'Fail';
+        if (!empty($max_job) && $total > $max_job) {
+            $this->outputs['status'] = 'ERROR';
+            $this->outputs['remark'] = 'Queues > {$max_job}';
         }
 
         return $this;
@@ -128,5 +133,10 @@ class Gearman extends Base
         }
         
         return $total;
+    }
+
+    public function __destruct()
+    {
+        parent::__destruct();
     }
 }

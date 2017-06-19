@@ -16,11 +16,11 @@ class Output
                 <tbody>
                     <tr align=\"left\">
                         <th width=\"12%\"></th>
-                        <th width=\"30%\">service</th>
-                        <th width=\"30%\">url</th>
-                        <th width=\"12%\">response</th>
-                        <th width=\"12%\">status</th>
-                        <th width=\"12%\">remark</th>
+                        <th width=\"30%\">Service</th>
+                        <th width=\"30%\">Url</th>
+                        <th width=\"12%\">Time(s)</th>
+                        <th width=\"12%\">Status</th>
+                        <th width=\"12%\">Remark</th>
                     </tr>\n"
                     . $this->getRows($datas) .
                 "</tbody>

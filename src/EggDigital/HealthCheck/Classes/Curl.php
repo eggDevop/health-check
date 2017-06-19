@@ -1,22 +1,24 @@
 <?php
 namespace EggDigital\HealthCheck\Classes;
 
-class Api extends Base
+use EggDigital\HealthCheck\Classes\Base;
+
+class Curl extends Base
 {
-    public function __construct()
+    public function __construct($module_name = null)
     {
         parent::__construct();
-        
-        $this->outputs['module'] = 'Api';
+
+        $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Curl';
     }
 
     public function curlGet($url)
     {
-        $this->outputs['service'] = 'Check Api';
+        $this->outputs['service'] = 'Check Curl Get';
         $this->outputs['url']     = $url;
 
         try {
-            $ch = curl_init();  
+            $ch = curl_init();
         
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -29,12 +31,12 @@ class Api extends Base
                 $this->outputs['status']  = 'ERROR';
                 $this->outputs['remark']  = 'Can\'t get url';
             }
-
-            return $this;
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->outputs['status']  = 'ERROR';
             $this->outputs['remark']  = 'Can\'t get url : ' . $e->getMessage();
         }
+
+        return $this;
     }
 
     public function __destruct()
