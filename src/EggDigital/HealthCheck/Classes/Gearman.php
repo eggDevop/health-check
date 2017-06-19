@@ -10,7 +10,7 @@ class Gearman extends Base
     public function __construct()
     {
         parent::__construct();
-        
+
         $this->outputs['module'] = 'Gearman';
         $this->conf = ['host', 'port', 'timeout'];
     }
@@ -28,15 +28,13 @@ class Gearman extends Base
 
             return $this;
         }
-
         // Set url
         $this->outputs['url'] = $conf['host'];
 
         try {
             $this->gm_admin = new GearmanAdmin($conf['host'], $conf['port'], $conf['timeout']);
-            
             // Check status gearman
-            if (!$this->gm_admin->getStatus) {
+            if (!$this->gm_admin->getStatus()) {
                 $this->outputs = [
                     'status'  => 'ERROR',
                     'remark'  => 'Can\'t connect to gearman'
@@ -75,12 +73,12 @@ class Gearman extends Base
         }
 
         $this->outputs['service'] .= '<br>Number of Worker : ' . count($wk);
-        
+
         return $this;
     }
 
     // Method for get total queue in german server
-    public function totalQueue()
+    public function totalQueue($max_job = 0)
     {
         if (!$this->gm_admin) {
             $this->outputs = [
@@ -92,12 +90,16 @@ class Gearman extends Base
         }
 
         // Get queue
-        $res = (array)$gm_admin->getStatus();
+        $res = (array)$this->gm_admin->getStatus();
         // $res = shell_exec( "(echo status ; sleep 0.1) | netcat {$server} {$port}" );
-        
+
         $total = $this->getNumberOfQueueFromStatusOutput($res);
-        
+
         $this->outputs['service'] .= '<br>Number of Queue : ' . $total;
+        // Check Max Queue
+        if(!empty($max_job) && $total > $max_job){
+            $this->outputs['status'] = 'Fail';
+        }
 
         return $this;
     }

@@ -1,4 +1,5 @@
 <?php
+namespace Ibmurai\PhpGearmanAdmin;
 /**
  * This file is part of the php-gearman-admin framework.
  * @link https://github.com/Ibmurai/php-gearman-admin

@@ -8,7 +8,7 @@ class Oracle extends Base
     public function __construct()
     {
         parent::__construct();
-        
+
         $this->outputs['module'] = 'Oracle';
         $this->conf = ['host', 'port', 'username', 'password', 'dbname', 'charset'];
     }
