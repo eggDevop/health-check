@@ -223,25 +223,32 @@ class File extends Base
         $file1 = $path1 . '/' . $file_name1;
         $file2 = $path2 . '/' . $file_name2;
 
-        if (filesize($file1) !== filesize($file2)) {
-            $this->outputs = [
-                'status'  => 'ERROR',
-                'remark'  => 'Size of file is not equal!'
-            ];
+        try {
+            if (filesize($file1) !== filesize($file2)) {
+                $this->outputs = [
+                    'status'  => 'ERROR',
+                    'remark'  => 'Size of file is not equal!'
+                ];
+
+                return $this;
+            }
+
+            if (md5_file($file1) !== md5_file($file2)) {
+                $this->outputs = [
+                    'status'  => 'ERROR',
+                    'remark'  => 'Content of file is not equal!'
+                ];
+
+                return $this;
+            }
 
             return $this;
-        }
-
-        if (md5_file($file1) !== md5_file($file2)) {
+        } catch(Exception $e) {
             $this->outputs = [
                 'status'  => 'ERROR',
-                'remark'  => 'Content of file is not equal!'
+                'remark'  => 'Can\'t compare file : ' . $e->getMessage()
             ];
-
-            return $this;
         }
-
-        return $this;
     }
 
     // Method for write file
