@@ -36,13 +36,13 @@ class Output
 
     private function getTitle($title)
     {
-        return (!empty($title)) ? "<h1>{$title}</h1>" : '';
+        return (!empty($title)) ? "<h3>{$title}</h3>" : '';
     }
 
     private function getBody($datas)
     {
         $body = '
-            <div id="wrapper">'
+            <div class="container-fluid">'
             . $this->getTable($datas)
             . $this->getSummary($datas) .
             '</div>';
@@ -87,9 +87,9 @@ class Output
         foreach ($datas as $title => $data) {
             $table .=
             $this->getTableTitle($title) .
-            '<table class="table table-striped table-hover table-responsive">
+            '<table class="table table-sm table-striped table-hover table-responsive">
                 <thead class="thead-inverse">
-                    <tr>
+                    <tr class="table-info">
                         <th width="12%"></th>
                         <th width="30%">Service</th>
                         <th width="30%">Url</th>
@@ -109,7 +109,7 @@ class Output
 
     private function getTableTitle($title)
     {
-        return (!empty($title)) ? "<h2>{$title}</h2>" : '';
+        return (!empty($title)) ? "<h4>{$title}</h4>" : '';
     }
 
     private function getTableRows($datas)
