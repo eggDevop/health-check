@@ -1,12 +1,10 @@
 <?php
 namespace EggDigital\HealthCheck\Classes;
 
-use EggDigital\HealthCheck\Interfaces\BaseInterface;
-
-abstract class Base implements BaseInterface
+abstract class Base
 {
     private $start_time;
-    protected $request;
+    protected $require_config;
     protected $outputs = [
         'module'   => '',
         'service'  => '',
@@ -26,11 +24,11 @@ abstract class Base implements BaseInterface
         return $this->outputs;
     }
 
-    protected function validParams($conf)
+    protected function validParams($config)
     {
-        foreach ($this->request as $k) {
-            // Check fix params
-            if (!isset($conf[$k])) {
+        foreach ($this->require_config as $param_name) {
+            // Checkey params is require
+            if (!isset($config[$param_name])) {
                 return false;
             }
         }

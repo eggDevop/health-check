@@ -1,16 +1,18 @@
 <?php
 namespace EggDigital\HealthCheck\Classes;
 
+use EggDigital\HealthCheck\Classes\Base;
+
 class Mongo extends Base
 {
     private $conn;
-    private $config;
-    public function __construct()
+    public function __construct($module_name = null)
     {
         parent::__construct();
 
-        $this->outputs['module'] = 'Mongo';
-        $this->request = ['host', 'dbname'];
+        $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Mongo';
+        $this->require_config = ['host', 'port', 'dbname'];
+
     }
 
     public function connect($conf)
@@ -75,5 +77,10 @@ class Mongo extends Base
         }
 
         return $this;
+    }
+
+    public function __destruct()
+    {
+        parent::__destruct();
     }
 }

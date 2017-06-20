@@ -3,32 +3,118 @@ namespace EggDigital\HealthCheck\Classes;
 
 class Output
 {
-    public function html($datas)
+    private $theme = 'stacktable';
+
+    public function html($datas, $title)
     {
-        return $this->getTable($datas);
+        $html = '
+            <!DOCTYPE html>
+            <html lang="en">
+                <head>'
+                . $this->getHeader() .
+                '</head>
+                <body>'
+                . $this->getTitle($title)
+                . $this->getBody($datas)
+                . $this->getFooter() .
+                '</body>
+            </html>';
+
+            return $html;
+    }
+
+    private function getHeader()
+    {
+        $header = '
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="X-UA-Compatible" content="ie=edge">
+            <title>Health Check</title>
+            <link href="http://fonts.googleapis.com/css?family=Courgette">
+            <link href="' . dirname(__FILE__) . "/../themes/{$theme}/{$theme}.css" . 'rel="stylesheet">';
+
+        return $header;
+    }
+
+    private function getTitle($title)
+    {
+        return (!empty($title)) ? "<h1>{$title}</h1>" : '';
+    }
+
+    private function getBody($datas)
+    {
+        $body = '
+            <div id="wrapper">'
+            . $this->getTable($datas)
+            . $this->getSummary($datas) .
+            '</div>';
+
+        return $body;
+    }
+
+    private function getFooter()
+    {
+        $footer = '
+            <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+            <!-- <script>window.jQuery || document.write(\'<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"><\/script>\')</script> </script> -->
+            <script src="' . dirname(__FILE__) . "/../themes/{$theme}/{$theme}.js" . '"></script>
+
+            <script>
+            $("#responsive-example-table").stacktable({myClass:"your-custom-class"});
+            </script>
+        ';
+
+        return $footer;
+    }
+
+    private function getSummary($datas)
+    {
+        $status = true;
+
+        foreach ($datas as $data) {
+            if (!isset($data['status'])) {
+                continue;
+            }
+
+            if ($data['status'] !== 'OK') {
+                $status = false;
+                break;
+            }
+        }
+
+        return ($status) ? '<br><br>THIS_PAGE_IS_COMPLETELY_LOADED' : '';
     }
 
     private function getTable($datas)
     {
-        $html =
-            "<table id=\"responsive-example-table\" class=\"large-only\" cellspacing=\"0\">
+        $table = '';
+        foreach ($datas as $title => $data) {
+            $table .=
+            $this->getTableTitle($title) .
+            '<table id="responsive-example-table" class="large-only" cellspacing="0" style="margin-bottom:50px;">
                 <tbody>
-                    <tr align=\"left\">
-                        <th width=\"12%\"></th>
-                        <th width=\"30%\">service</th>
-                        <th width=\"30%\">url</th>
-                        <th width=\"12%\">response</th>
-                        <th width=\"12%\">status</th>
-                        <th width=\"12%\">remark</th>
-                    </tr>\n"
-                    . $this->getRows($datas) .
-                "</tbody>
-            </table>";
+                    <tr align="left">
+                        <th width="12%"></th>
+                        <th width="30%">Service</th>
+                        <th width="30%">Url</th>
+                        <th width="12%">Time(s)</th>
+                        <th width="12%">Status</th>
+                        <th width="12%">Remark</th>
+                    </tr>'
+                    . $this->getTableRows($data) .
+                '</tbody>
+            </table><br>';
+        }
 
-        return $html;
+        return $table;
     }
 
-    private function getRows($datas)
+    private function getTableTitle($title)
+    {
+        return (!empty($title)) ? "<h2>{$title}</h2>" : '';
+    }
+
+    private function getTableRows($datas)
     {
         $html = '';
         foreach ($datas as $value) {
