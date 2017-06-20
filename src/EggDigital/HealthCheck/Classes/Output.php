@@ -5,7 +5,7 @@ class Output
 {
     private $theme = 'stacktable';
 
-    public function html($datas)
+    public function html($datas, $title)
     {
         $html = '
             <!DOCTYPE html>
@@ -14,6 +14,7 @@ class Output
                 . $this->getHader() .
                 '</head>
                 <body>'
+                . $this->getTitle($title)
                 . $this->getBody($datas)
                 . $this->getFooter() .
                 '</body>
@@ -33,6 +34,11 @@ class Output
             <link href="' . dirname(__FILE__) . "/../themes/{$theme}/{$theme}.css" . 'rel="stylesheet">';
 
         return $header;
+    }
+
+    private function getTitle($title)
+    {
+        return (!empty($title)) ? "<h1>{$title}</h1>" : '';
     }
 
     private function getBody($datas)
