@@ -11,7 +11,7 @@ class Output
             <!DOCTYPE html>
             <html lang="en">
                 <head>'
-                . $this->getHader() .
+                . $this->getHeader() .
                 '</head>
                 <body>'
                 . $this->getTitle($title)
