@@ -12,7 +12,7 @@ class Mysql extends Base
         parent::__construct();
         
         $this->outputs['module'] = 'Mysql';
-        $this->conf = ['host', 'username', 'password', 'dbname'];
+        $this->request = ['host', 'username', 'password', 'dbname'];
     }
 
     public function connect($conf)
@@ -23,7 +23,7 @@ class Mysql extends Base
         if (false === $this->validParams($conf)) {
             $this->outputs = [
                 'status' => 'ERROR',
-                'remark' => 'Require parameter (' . implode(',', $this->conf) . ')'
+                'remark' => 'Require parameter (' . implode(',', $this->request) . ')'
             ];
 
             return $this;

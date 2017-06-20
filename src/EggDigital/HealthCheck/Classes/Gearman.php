@@ -12,7 +12,7 @@ class Gearman extends Base
         parent::__construct();
 
         $this->outputs['module'] = 'Gearman';
-        $this->conf = ['host', 'port', 'timeout'];
+        $this->request = ['host', 'port', 'timeout'];
     }
 
     public function connect($conf)
@@ -23,7 +23,7 @@ class Gearman extends Base
         if (false === $this->validParams($conf)) {
             $this->outputs = [
                 'status' => 'ERROR',
-                'remark' => 'Require parameter (' . implode(',', $this->conf) . ')'
+                'remark' => 'Require parameter (' . implode(',', $this->request) . ')'
             ];
 
             return $this;

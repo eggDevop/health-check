@@ -3,25 +3,77 @@ namespace EggDigital\HealthCheck\Classes;
 
 class Mongo extends Base
 {
-    public function connect($hostname, $port, $database, $username = null, $password = null)
+    private $conn;
+    private $config;
+    public function __construct()
     {
-        $this->setUrl($hostname.':'.$port);
+        parent::__construct();
 
-        if (empty($username) && empty($password)) {
-            $mongo = new Mongo('mongodb://'.$hostname.':'.$port.'/'. $database);
-        } else {
-            $mongo = new Mongo('mongodb://'.$username.':'.$password.'@'.$hostname.':'.$port.'/'.$database);
-        }
-
-        return $mongo;
+        $this->outputs['module'] = 'Mongo';
+        $this->request = ['host', 'dbname'];
     }
 
-    public function getData($mongo, $database, $collection)
+    public function connect($conf)
     {
-        $db         = $mongo->selectDB($database);
-        $collection = new MongoCollection($db, $collection);
-        $cursor     = $collection->findOne();
+        $this->outputs['service'] = 'Check Connection';
+        $this->conf = $conf;
+        // Validate parameter
+        if (false === $this->validParams($this->conf)) {
+            $this->outputs['status'] = 'ERROR';
+            $this->outputs['remark'] = 'Require parameter (' . implode(',', $this->request) . ')';
 
-        return $cursor;
+            return $this;
+        }
+
+        // Set url
+        $this->outputs['url'] = $this->conf['host'].':'.$this->conf['port'];
+
+        try{
+            if (empty($this->conf['username']) && empty($this->conf['password'])) {
+                $this->conn = new \MongoDB\Driver\Manager('mongodb://' . $this->conf['host'] . ':' . $this->conf['port']);
+                // $mongodb = (new \MongoDB\Client('mongodb://'.$this->conf['host'].':'.$this->conf['port'].'/'. $this->conf['dbname']));
+            } else {
+                $this->conn = (new \MongoDB\Client('mongodb://'.$this->conf['username'].':'.$this->conf['password'].'@'.$this->conf['host'].':'.$this->conf['port'].'/'.$this->conf['dbname']));
+            }
+
+            if (!$this->conn->getServers()) {
+                $this->outputs['status'] = 'ERROR';
+                $this->outputs['remark'] = 'Can\'t connect to database';
+            }
+
+        }catch (\Exception $e) {
+            $this->outputs['status'] = 'ERROR';
+            $this->outputs['remark'] = 'Can\'t connect to database : ' . $e->getMessage();
+        }
+
+        return $this;
+
+    }
+    public function query($filter = [])
+    {
+        $this->outputs['service'] = 'Check Query Datas';
+        // Query
+        try {
+            if (!$this->conn->getServers()) {
+                $this->outputs['status'] = 'ERROR';
+                $this->outputs['remark'] = 'Can\'t connect to database';
+
+                return $this;
+            }
+
+            $query = new \MongoDB\Driver\Query($filter);
+
+            $rows = $this->conn->executeQuery($this->conf['dbname'].".".$this->conf['collection'], $query);
+
+            if (!$rows) {
+                $this->outputs['status'] = 'ERROR';
+                $this->outputs['remark'] = 'Can\'t query datas';
+            }
+        } catch (\Exception $e) {
+            $this->outputs['status'] = 'ERROR';
+            $this->outputs['remark'] = 'Can\'t query datas : ' . $e->getMessage();
+        }
+
+        return $this;
     }
 }

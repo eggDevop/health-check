@@ -6,7 +6,7 @@ use EggDigital\HealthCheck\Interfaces\BaseInterface;
 abstract class Base implements BaseInterface
 {
     private $start_time;
-    protected $conf;
+    protected $request;
     protected $outputs = [
         'module'   => '',
         'service'  => '',
@@ -28,7 +28,7 @@ abstract class Base implements BaseInterface
 
     protected function validParams($conf)
     {
-        foreach ($this->conf as $k) {
+        foreach ($this->request as $k) {
             // Check fix params
             if (!isset($conf[$k])) {
                 return false;
