@@ -31,7 +31,7 @@ class Output
             <meta http-equiv="X-UA-Compatible" content="ie=edge">
             <title>Health Check</title>
             <link href="http://fonts.googleapis.com/css?family=Courgette">
-            <link href="' . dirname(__FILE__) . "/../themes/{$theme}/{$theme}.css" . 'rel="stylesheet">';
+            <link href="' . dirname(__FILE__) . "/../themes/{$this->theme}/{$this->theme}.css" . 'rel="stylesheet">';
 
         return $header;
     }
@@ -57,7 +57,7 @@ class Output
         $footer = '
             <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
             <!-- <script>window.jQuery || document.write(\'<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"><\/script>\')</script> </script> -->
-            <script src="' . dirname(__FILE__) . "/../themes/{$theme}/{$theme}.js" . '"></script>
+            <script src="' . dirname(__FILE__) . "/../themes/{$this->theme}/{$this->theme}.js" . '"></script>
 
             <script>
             $("#responsive-example-table").stacktable({myClass:"your-custom-class"});
