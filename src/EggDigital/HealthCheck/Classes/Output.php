@@ -65,18 +65,20 @@ class Output
     {
         $status = true;
 
-        foreach ($datas as $data) {
-            if (!isset($data['status'])) {
-                continue;
-            }
+        foreach ($datas as $modules) {
+            foreach ($module as $data) {
+                if (!isset($data['status'])) {
+                    continue;
+                }
 
-            if ($data['status'] !== 'OK') {
-                $status = false;
-                break;
+                if ($data['status'] !== 'OK') {
+                    $status = false;
+                    break;
+                }
             }
         }
 
-        return ($status) ? '<br><br>THIS_PAGE_IS_COMPLETELY_LOADED' : '';
+        return ($status) ? 'THIS_PAGE_IS_COMPLETELY_LOADED' : '';
     }
 
     private function getTable($datas)
