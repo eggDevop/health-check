@@ -6,6 +6,7 @@ use EggDigital\HealthCheck\Classes\Base;
 class Mongo extends Base
 {
     private $conn;
+    private $conf;
     public function __construct($module_name = null)
     {
         parent::__construct();
@@ -22,7 +23,7 @@ class Mongo extends Base
         // Validate parameter
         if (false === $this->validParams($this->conf)) {
             $this->outputs['status'] = 'ERROR';
-            $this->outputs['remark'] = 'Require parameter (' . implode(',', $this->request) . ')';
+            $this->outputs['remark'] = 'Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
         }
