@@ -3,8 +3,6 @@ namespace EggDigital\HealthCheck\Classes;
 
 class Output
 {
-    private $theme = 'stacktable';
-
     public function html($datas, $title)
     {
         $html = '
@@ -30,8 +28,8 @@ class Output
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta http-equiv="X-UA-Compatible" content="ie=edge">
             <title>Health Check</title>
-            <link href="http://fonts.googleapis.com/css?family=Courgette">
-            <link href="' . dirname(__FILE__) . "/../themes/{$this->theme}/{$this->theme}.css" . 'rel="stylesheet">';
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        ';
 
         return $header;
     }
@@ -55,13 +53,9 @@ class Output
     private function getFooter()
     {
         $footer = '
-            <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
-            <!-- <script>window.jQuery || document.write(\'<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"><\/script>\')</script> </script> -->
-            <script src="' . dirname(__FILE__) . "/../themes/{$this->theme}/{$this->theme}.js" . '"></script>
-
-            <script>
-            $("#responsive-example-table").stacktable({myClass:"your-custom-class"});
-            </script>
+            <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
         ';
 
         return $footer;
@@ -91,16 +85,18 @@ class Output
         foreach ($datas as $title => $data) {
             $table .=
             $this->getTableTitle($title) .
-            '<table id="responsive-example-table" class="large-only" cellspacing="0" style="margin-bottom:50px;">
-                <tbody>
-                    <tr align="left">
+            '<table class="table table-striped table-hover table-responsive">
+                <thead class="thead-inverse">
+                    <tr>
                         <th width="12%"></th>
                         <th width="30%">Service</th>
                         <th width="30%">Url</th>
                         <th width="12%">Time(s)</th>
                         <th width="12%">Status</th>
                         <th width="12%">Remark</th>
-                    </tr>'
+                    </tr>
+                </thead>
+                <tbody>'
                     . $this->getTableRows($data) .
                 '</tbody>
             </table><br>';
@@ -119,7 +115,7 @@ class Output
         $html = '';
         foreach ($datas as $value) {
             $html .=
-                "<tr align=\"left\">
+                "<tr>
                     <td>{$value['module']}</td>
                     <td>{$value['service']}</td>
                     <td>{$value['url']}</td>
