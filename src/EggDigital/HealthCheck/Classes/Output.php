@@ -66,7 +66,7 @@ class Output
         $status = true;
 
         foreach ($datas as $modules) {
-            foreach ($module as $data) {
+            foreach ($modules as $data) {
                 if (!isset($data['status'])) {
                     continue;
                 }
@@ -89,7 +89,7 @@ class Output
             $this->getTableTitle($title) .
             '<table class="table table-sm table-striped table-hover table-responsive">
                 <thead class="thead-inverse">
-                    <tr class="table-info">
+                    <tr>
                         <th width="12%"></th>
                         <th width="30%">Service</th>
                         <th width="30%">Url</th>
