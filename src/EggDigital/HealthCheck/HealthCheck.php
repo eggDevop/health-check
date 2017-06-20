@@ -3,65 +3,74 @@ namespace EggDigital\HealthCheck;
 
 class HealthCheck
 {
-    public static function check($service)
+    public static function check($service, $module_name = null)
     {
-        $classes = ['cassandra', 'file', 'gearman', 'mongo', 'mysql', 'oracle', 'redis', 'socket', 'api'];
+        $classes = ['cassandra', 'file', 'gearman', 'mongo', 'mysql', 'oracle', 'redis', 'socket', 'curl'];
 
         if (in_array(strtolower($service), $classes)) {
-            return Self::$service();
+            return Self::$service($module_name);
         }
 
-        echo 'Class name does not exists';
+        echo 'Class Name Does Not Exists';
     }
 
-    public static function output($datas, $title = null)
+    public static function output($datas)
     {
         $output = new \EggDigital\HealthCheck\Classes\Output;
-        return $output->html($datas, $title);
+        return $output->html($datas);
     }
 
-    private static function cassandra()
+    private static function cassandra($module_name)
     {
-        return new \EggDigital\HealthCheck\Classes\Cassandra;
+        $cassandra = new \EggDigital\HealthCheck\Classes\Cassandra;
+        return $cassandra($module_name);
     }
 
-    private static function file()
+    private static function file($module_name)
     {
-        return new \EggDigital\HealthCheck\Classes\File;
+        $file = new \EggDigital\HealthCheck\Classes\File;
+        return $file($module_name);
     }
 
-    private static function gearman()
+    private static function gearman($module_name)
     {
-        return new \EggDigital\HealthCheck\Classes\Gearman;
+        $gearman = new \EggDigital\HealthCheck\Classes\Gearman;
+        return $gearman($module_name);
     }
 
-    private static function mongo()
+    private static function mongo($module_name)
     {
-        return new \EggDigital\HealthCheck\Classes\Mongo;
+        $mongo = new \EggDigital\HealthCheck\Classes\Mongo;
+        return $mongo($module_name);
     }
 
-    private static function mysql()
+    private static function mysql($module_name)
     {
-        return new \EggDigital\HealthCheck\Classes\Mysql;
+        $mysql = new \EggDigital\HealthCheck\Classes\Mysql;
+        return $mysql($module_name);
     }
 
-    private static function oracle()
+    private static function oracle($module_name)
     {
-        return new \EggDigital\HealthCheck\Classes\Oracle;
+        $oracle = new \EggDigital\HealthCheck\Classes\Oracle;
+        return $oracle($module_name);
     }
 
-    private static function redis()
+    private static function redis($module_name)
     {
-        return new \EggDigital\HealthCheck\Classes\Redis;
+        $redis = new \EggDigital\HealthCheck\Classes\Redis;
+        return $redis($module_name);
     }
 
-    private static function socket()
+    private static function socket($module_name)
     {
-        return new \EggDigital\HealthCheck\Classes\Socket;
+        $socket = new \EggDigital\HealthCheck\Classes\Socket;
+        return $socket($module_name);
     }
 
-    private static function api()
+    private static function curl($module_name)
     {
-        return new \EggDigital\HealthCheck\Classes\Api;
+        $curl = new \EggDigital\HealthCheck\Classes\Api;
+        return $curl($module_name);
     }
 }
