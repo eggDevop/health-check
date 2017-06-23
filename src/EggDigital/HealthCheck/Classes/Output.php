@@ -90,12 +90,12 @@ class Output
             '<table class="table table-sm table-striped table-hover table-responsive">
                 <thead class="thead-inverse">
                     <tr>
-                        <th width="12%"></th>
-                        <th width="30%">Service</th>
-                        <th width="30%">Url</th>
-                        <th width="12%">Time(s)</th>
-                        <th width="12%">Status</th>
-                        <th width="12%">Remark</th>
+                        <th></th>
+                        <th>Service</th>
+                        <th>Url</th>
+                        <th>Time(s)</th>
+                        <th>Status</th>
+                        <th>Remark</th>
                     </tr>
                 </thead>
                 <tbody>'
