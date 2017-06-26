@@ -12,7 +12,6 @@ class Output
                 . $this->getHeader() .
                 '</head>
                 <body>'
-                . $this->getTitle($title)
                 . $this->getBody($datas)
                 . $this->getFooter() .
                 '</body>
@@ -32,42 +31,37 @@ class Output
             <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
             <title>Document</title>
             <style>
-                .blink 
-          {
-                    animation: blinker 1s linear infinite;
-                }
-                    @keyframes blinker 
-                {  
-                    50% { opacity: 0; 
-                }
-          }
+            .blink {
+                animation: blinker 1s linear infinite;
+            }
+            @keyframes blinker {  
+                50% { opacity: 0; }
+            }
 
-           .circle 
-           {
-            width: 30px;
-            height: 30px;
-            background: red;
-            -moz-border-radius: 50px;
-            -webkit-border-radius: 50px;
-            border-radius: 50px;
+           .circle {
+                width: 30px;
+                height: 30px;
+                background: red;
+                -moz-border-radius: 50px;
+                -webkit-border-radius: 50px;
+                border-radius: 50px;
            }
             </style>
-        '
-        ;
-
+        ';
 
         return $header;
     }
 
     private function getTitle($title = null)
     { 
-        return (!empty($title)) ? "<h3>{$title}</h3>" : '';
+        return (!empty($title)) ? "<h3 class=\"text-center\">{$title}</h3>" : '';
     }
 
     private function getBody($datas)
     {
         $body = '
             <div class="container-fluid">'
+            . $this->getTitle($title)
             . $this->getTable($datas)
             . $this->getSummary($datas) .
             '</div>';
@@ -136,8 +130,6 @@ class Output
 
     private function getTableTitle($title = null)
     {
-        $title = "           Health Check
-                <br></br>  [ SMS Gateway ]";
         return (!empty($title)) ? "<h3>{$title}</h3>" : '';
     }
 
@@ -147,10 +139,10 @@ class Output
         foreach ($datas as $value) {
             $html .= '<tr>
                         <td>';
-            if($value['status'] === 'OK' )
-                $html .= '<center><div class="circle" style="background-color: green"></div></center>';
-            else
-                $html .= '<center><div class="circle blink" ></div></center>';              
+
+            $html .=  ($value['status'] === 'OK' ) 
+                ? '<center><div class="circle" style="background-color: green"></div></center>'
+                : '<center><div class="circle blink" ></div></center>';
 
             $html .= '</td>';
             $html .= '<td>'.$value['module'].'</td>';
