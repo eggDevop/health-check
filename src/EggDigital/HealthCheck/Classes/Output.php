@@ -155,23 +155,21 @@ class Output
     {
         $html = '';
         foreach ($datas as $value) {
-            $html .=
-                "<tr>
-                    <td>
-                    <?php 
-                        echo $value['status'] === 'OK' ?
-                            '<center><div class="circle" style="background-color: green"></div></center>'
-                               :
-                                '<center><div class="circle blink" ></div></center>'
-                   ?>
-                    </td>
-                    <td>{$value['module']}</td>
-                    <td>{$value['service']}</td>
-                    <td>{$value['url']}</td>
-                    <td>{$value['response']}</td>
-                    <td>{$value['status']}</td>
-                    <td>{$value['remark']}</td>
-                </tr>\n";
+            $html .= '<tr>
+                        <td>';
+            if($value['status'] === 'OK' )
+                $html .= '<center><div class="circle" style="background-color: green"></div></center>';
+            else
+                $html .= '<center><div class="circle blink" ></div></center>';              
+
+            $html .= '</td>';
+            $html .= '<td>'.$value['module'].'</td>';
+            $html .= '<td>'.$value['service'].'</td>';
+            $html .= '<td>'.$value['url'].'</td>';
+            $html .= '<td>'.$value['response'].'</td>';
+            $html .= '<td>'.$value['status'].'</td>';
+            $html .= '<td>'.$value['remark'].'</td>';
+            $html .= '</tr>';
         }
 
         return $html;
