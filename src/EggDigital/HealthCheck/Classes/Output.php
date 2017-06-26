@@ -3,7 +3,7 @@ namespace EggDigital\HealthCheck\Classes;
 
 class Output
 {
-    public function html($datas, $title)
+    public function html($datas, $title = null)
     {
         $html = '
             <!DOCTYPE html>
@@ -12,7 +12,7 @@ class Output
                 . $this->getHeader() .
                 '</head>
                 <body>'
-                . $this->getBody($datas)
+                . $this->getBody($datas, $title)
                 . $this->getFooter() .
                 '</body>
             </html>';
@@ -52,12 +52,12 @@ class Output
         return $header;
     }
 
-    private function getTitle($title = null)
+    private function getTitle($title)
     { 
         return (!empty($title)) ? "<h3 class=\"text-center\">{$title}</h3>" : '';
     }
 
-    private function getBody($datas)
+    private function getBody($datas, $title)
     {
         $body = '
             <div class="container-fluid">'
