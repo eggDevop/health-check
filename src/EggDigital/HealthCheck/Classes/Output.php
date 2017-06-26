@@ -60,7 +60,7 @@ class Output
     private function getBody($datas, $title)
     {
         $body = '
-            <div class="container-fluid">'
+            <div class="container-fluid" style="padding-top:1em;">'
             . $this->getTitle($title)
             . $this->getTable($datas)
             . $this->getSummary($datas) .
@@ -110,13 +110,13 @@ class Output
             '<table class="table table-sm table-striped table-hover table-responsive table-sm">
                 <thead class="thead-inverse">
                     <tr>
-                        <th></th>
-                        <th></th>
-                        <th>Service</th>
-                        <th>Url</th>
-                        <th>Time(s)</th>
-                        <th>Status</th>
-                        <th>Remark</th>
+                        <th width="5%"></th>
+                        <th width="15%"></th>
+                        <th width="20%">Service</th>
+                        <th width="25%">Url</th>
+                        <th width="6%">Time(s)</th>
+                        <th width="9%">Status</th>
+                        <th width="20%">Remark</th>
                     </tr>
                 </thead>
                 <tbody>'
