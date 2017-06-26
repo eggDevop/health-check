@@ -59,15 +59,9 @@ class Output
         return $header;
     }
 
-    private function getTitle($title)
-    {
-           $title = "SCB";
-        return (!empty($title)) ? 
-        '<button type="button"  class="btn btn-default btn-lg"   style="background-color: #663399"   >
-                             <i class="fa fa-home" ></i>                     <font color="#FFA500"   >
-       
-            {$title}</font> 
-        </button>' : '';
+    private function getTitle($title = null)
+    { 
+        return (!empty($title)) ? "<h3>{$title}</h3>" : '';
     }
 
     private function getBody($datas)
@@ -123,6 +117,7 @@ class Output
                 <thead class="thead-inverse">
                     <tr>
                         <th></th>
+                        <th></th>
                         <th>Service</th>
                         <th>Url</th>
                         <th>Time(s)</th>
@@ -139,16 +134,11 @@ class Output
         return $table;
     }
 
-    private function getTableTitle($title)
+    private function getTableTitle($title = null)
     {
         $title = "           Health Check
                 <br></br>  [ SMS Gateway ]";
-        return (!empty($title)) ? ' &nbsp; <button type="button" class="btn btn-default btn-lg"   style="background-color: #663399"   >
-                                                              <i class="fa fa-chain-broken"></i>     
-                                      <font                                                                    
-                                           color="#FFA500"   > {$title}
-                                      </font>  
-                        </button>' : '';
+        return (!empty($title)) ? "<h3>{$title}</h3>" : '';
     }
 
     private function getTableRows($datas)
