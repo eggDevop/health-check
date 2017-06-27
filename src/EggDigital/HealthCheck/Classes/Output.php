@@ -39,8 +39,8 @@ class Output
             }
 
            .circle {
-                width: 30px;
-                height: 30px;
+                width: 20px;
+                height: 20px;
                 background: red;
                 -moz-border-radius: 50px;
                 -webkit-border-radius: 50px;
@@ -60,7 +60,7 @@ class Output
     private function getBody($datas, $title)
     {
         $body = '
-            <div class="container-fluid" style="padding-top:1em;">'
+            <div class="container-fluid" style="padding-top:2em;">'
             . $this->getTitle($title)
             . $this->getTable($datas)
             . $this->getSummary($datas) .
@@ -110,8 +110,7 @@ class Output
             '<table class="table table-sm table-striped table-hover table-responsive table-sm">
                 <thead class="thead-inverse">
                     <tr>
-                        <th width="5%"></th>
-                        <th width="15%"></th>
+                        <th colspan="2" width="20%"></th>
                         <th width="20%">Service</th>
                         <th width="25%">Url</th>
                         <th width="6%">Time(s)</th>
@@ -138,20 +137,20 @@ class Output
         $html = '';
         foreach ($datas as $value) {
             $html .= '<tr>
-                        <td>';
+                        <td width=\"5%\">';
 
             $html .=  ($value['status'] === 'OK' ) 
                 ? '<center><div class="circle" style="background-color: green"></div></center>'
                 : '<center><div class="circle blink" ></div></center>';
 
-            $html .= '</td>';
-            $html .= '<td>'.$value['module'].'</td>';
-            $html .= '<td>'.$value['service'].'</td>';
-            $html .= '<td>'.$value['url'].'</td>';
-            $html .= '<td>'.$value['response'].'</td>';
-            $html .= '<td>'.$value['status'].'</td>';
-            $html .= '<td>'.$value['remark'].'</td>';
-            $html .= '</tr>';
+            $html .= "</td>;
+                <td width=\"15%\">{$value['module']}</td>
+                <td width=\"20%\">{$value['service']}</td>
+                <td width=\"25%\">{$value['url']}</td>
+                <td width=\"6%\">{$value['response']}</td>
+                <td width=\"9%\">{$value['status']}</td>
+                <td width=\"20%\">{$value['remark']}</td>
+            </tr>";
         }
 
         return $html;
