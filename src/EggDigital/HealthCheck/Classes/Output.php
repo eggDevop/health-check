@@ -137,13 +137,13 @@ class Output
         $html = '';
         foreach ($datas as $value) {
             $html .= '<tr>
-                        <td width=\"5%\">';
+                        <td width="5%">';
 
             $html .=  ($value['status'] === 'OK' ) 
                 ? '<center><div class="circle" style="background-color: green"></div></center>'
                 : '<center><div class="circle blink" ></div></center>';
 
-            $html .= "</td>;
+            $html .= "</td>
                 <td width=\"15%\">{$value['module']}</td>
                 <td width=\"20%\">{$value['service']}</td>
                 <td width=\"25%\">{$value['url']}</td>
