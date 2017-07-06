@@ -5,7 +5,7 @@ class HealthCheck
 {
     public static function check($service, $module_name = null)
     {
-        $classes = ['cassandra', 'file', 'gearman', 'mongo', 'mysql', 'oracle', 'redis', 'socket', 'curl'];
+        $classes = ['cassandra', 'file', 'gearman', 'mongo', 'mysql', 'oracle', 'redis', 'socket', 'curl', 'rabbitmq'];
 
         if (in_array(strtolower($service), $classes)) {
             return Self::$service($module_name);
@@ -63,5 +63,10 @@ class HealthCheck
     private static function curl($module_name)
     {
         return new \EggDigital\HealthCheck\Classes\Api($module_name);
+    }
+
+    private static function rabbitmq($module_name)
+    {
+        return new \EggDigital\HealthCheck\Classes\RabbitMQ($module_name);
     }
 }

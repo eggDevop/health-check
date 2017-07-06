@@ -13,7 +13,8 @@
     }],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=5.5.0"
+        "php": ">=5.5.0",
+        "php-amqplib/php-amqplib": "2.6.*"
     },
     "autoload": {
         "classmap": [
