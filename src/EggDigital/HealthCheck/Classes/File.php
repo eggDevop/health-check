@@ -167,7 +167,52 @@ class File extends Base
         return $this;
     }
 
+    // Method for check remain file
+    public function remainFile($path, $min)
+    {
+        $this->outputs['service'] = 'Check Remain File';
+        $this->outputs['url']     = $path;
+
+        // Check directory exists
+        if (!$this->pathFileExists($path)) {
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Directory "{$path}" Does Not Exists!';
+
+            return $this;
+        }
+
+        // Scan file in path
+        $file = scandir($path, 1);
+        $total_file = count($file) - 2;
+
+        // Check File remain
+        $date_now = date("Y-m-d H:i:s");
+
+        for ($i = 0; $i < $total_file; $i++) {
+            $modify_date = date("Y-m-d H:i:s", filemtime($file[$i]));
+            $diff_min    = $this->dateDifference($date_now, $modify_date);
+
+            if ($diff_min > $min) {
+                $this->outputs['status']  = "ERROR";
+                $this->outputs['remark']  .= "File " . $file[$i] . " is remain in folder {$path}!";
+            }
+        }
+
+        return $this;
+    }
+
     //========== Start : Support Method ==========/
+
+    // Method for diff date
+    private function dateDifference($date_1, $date_2, $differenceFormat = '%i')
+    {
+        $datetime1 = date_create($date_1);
+        $datetime2 = date_create($date_2);
+        
+        $interval = date_diff($datetime1, $datetime2);
+        
+        return (int) $interval->format($differenceFormat);
+    }
 
     // Method for check path file
     private function pathFileExists($path)
