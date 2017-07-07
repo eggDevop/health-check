@@ -3,7 +3,6 @@ namespace EggDigital\HealthCheck\Classes;
 
 use EggDigital\HealthCheck\Classes\Base;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
-use AMQPQueue;
 
 class RabbitMQ extends Base
 {
@@ -31,7 +30,7 @@ class RabbitMQ extends Base
         }
 
         // Set url
-        $this->outputs['url'] = $conf['queue_ip'];
+        $this->outputs['url'] = $conf['host'];
 
         try {
             $this->connection = new AMQPStreamConnection($conf['host'], $conf['port'], $conf['username'], $conf['password']);
@@ -59,10 +58,12 @@ class RabbitMQ extends Base
             return $this;
         }
 
-        foreach ($queue_name as $val) {
-            $total = AMQPQueue::declare($val);
+        $this->channel = $this->connection->channel();
 
-            $this->outputs['service'] .= "<br>Number of Queue {$val} : {$total}";
+        foreach ($queue_name as $val) {
+            list(,$messageCount,) = $this->channel->queue_declare($val, false, false, false, false);
+
+            $this->outputs['service'] .= "<br>Number of Queue {$val} : {$messageCount}";
         }
 
         return $this;
