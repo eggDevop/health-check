@@ -61,7 +61,7 @@ class RabbitMQ extends Base
         $this->channel = $this->connection->channel();
 
         foreach ($queue_name as $val) {
-            list(,$messageCount,) = $this->channel->queue_declare($val, false, false, false, false);
+            list(,$messageCount,) = $this->channel->queue_declare($val, true, false, false, false);
 
             $this->outputs['service'] .= "<br>Number of Queue {$val} : {$messageCount}";
         }
@@ -82,7 +82,7 @@ class RabbitMQ extends Base
         $this->channel = $this->connection->channel();
 
         foreach ($queue_name as $val) {
-            list(,,$consumerCount) = $this->channel->queue_declare($val, false, false, false, false);
+            list(,,$consumerCount) = $this->channel->queue_declare($val, true, false, false, false);
 
             $this->outputs['service'] .= "<br>Number of Worker {$val} : {$consumerCount}";
         }
