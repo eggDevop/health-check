@@ -191,10 +191,10 @@ class File extends Base
             if (!$this->pathFileExists($path_file)) {
                 if ($i === 0) {
                     $this->outputs['status'] = 'ERROR';
-                    $this->outputs['remark'] = 'Directory Does Not Exists!';
+                    $this->outputs['remark'] = "Directory {$path_file} Does Not Exists!";
                 } else {
                     $this->outputs['status'] .= '<br>ERROR';
-                    $this->outputs['remark'] .= '<br>Directory Does Not Exists!';
+                    $this->outputs['remark'] .= "<br>Directory {$path_file} Does Not Exists!";
                 }
 
                 continue;
@@ -207,13 +207,15 @@ class File extends Base
             $date_now = date("Y-m-d H:i:s");
 
             // Check File remain
+            $count_remain = 0;
             for ($j = 0; $j < $total_file; $j++) {
                 $file_name   = $file[$j];
                 $modify_date = date("Y-m-d H:i:s", filemtime($path_file . '/' . $file_name));
                 $diff_min    = $this->dateDifference($date_now, $modify_date);
 
                 if ($diff_min > $min) {
-                    if ($j === 0) {
+                    $count_remain++;
+                    if ($count_remain === 1) {
                         $this->outputs['status'] = 'ERROR';
                         $this->outputs['remark'] = "File " . $file_name . " is remain!";
                     } else {
