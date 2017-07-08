@@ -171,15 +171,17 @@ class File extends Base
     public function remainFile($path, $min)
     {
         $this->outputs['service'] = 'Check Remain File';
+        
+        $list_path = [];
 
         // Set path to array
         if (!is_array($path)) {
-            $path = [$path];
+            $list_path = [$path];
         }
 
-        $total_path = count($path);
+        $total_path = count($list_path);
         for ($i = 0; $i < $total_path; $i++) {
-            $path_file = $path[$i];
+            $path_file = $list_path[$i];
 
             if ($i === 0) {
                 $this->outputs['url'] = $path_file;
