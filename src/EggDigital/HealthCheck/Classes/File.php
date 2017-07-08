@@ -191,10 +191,10 @@ class File extends Base
             if (!$this->pathFileExists($path_file)) {
                 if ($i === 0) {
                     $this->outputs['status'] = 'ERROR';
-                    $this->outputs['remark'] = "Directory {$path_file} Does Not Exists!";
+                    $this->outputs['remark'] = 'Directory Does Not Exists!';
                 } else {
                     $this->outputs['status'] .= '<br>ERROR';
-                    $this->outputs['remark'] .= "<br>Directory {$path_file} Does Not Exists!";
+                    $this->outputs['remark'] .= '<br>Directory Does Not Exists!';
                 }
 
                 continue;
