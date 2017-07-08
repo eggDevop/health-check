@@ -62,7 +62,7 @@ class File extends Base
             // Check directory exists
             if (!$this->pathFileExists($path)) {
                 $this->outputs['status']  = 'ERROR';
-                $this->outputs['remark']  = 'Directory "{$path}" Does Not Exists!';
+                $this->outputs['remark']  = "Directory {$path} Does Not Exists!";
 
                 return $this;
             }
@@ -107,7 +107,7 @@ class File extends Base
         foreach ([$path1, $path2] as $path) {
             if (!$this->pathFileExists($path)) {
                 $this->outputs['status']  = 'ERROR';
-                $this->outputs['remark']  = 'Directory "{$path}" Does Not Exists!';
+                $this->outputs['remark']  = "Directory {$path} Does Not Exists!";
 
                 return $this;
             }
@@ -121,7 +121,7 @@ class File extends Base
         foreach ([$file1, $file2] as $file) {
             if (!$this->fileExists($file1)) {
                 $this->outputs['status']  = 'ERROR';
-                $this->outputs['remark']  = 'File "{$file}" Not Found!';
+                $this->outputs['remark']  = "File {$file} Not Found!";
 
                 return $this;
             }
@@ -168,52 +168,57 @@ class File extends Base
     }
 
     // Method for check remain file
-    public function remainFile($path, $channel, $min)
+    public function remainFile($path, $min)
     {
         $this->outputs['service'] = 'Check Remain File';
-        $total_channel = count($channel);
 
-        // Path channel
-        for ($i = 0; $i < $total_channel; $i++) {
-            $path_replace = str_replace('[service]', $channel[$i], $path);
+        // Set path to array
+        if (!is_array($path)) {
+            $path = [$path];
+        }
+
+        $total_path = count($path);
+        for ($i = 0; $i < $total_path; $i++) {
+            $path_file = $path[$i];
 
             if ($i === 0) {
-                $this->outputs['url'] = $path_replace;
+                $this->outputs['url'] = $path_file;
             } else {
-                $this->outputs['url'] .= '<br>' . $path_replace;
+                $this->outputs['url'] .= '<br>' . $path_file;
             }
 
             // Check directory exists
-            if (!$this->pathFileExists($path_replace)) {
+            if (!$this->pathFileExists($path_file)) {
                 if ($i === 0) {
                     $this->outputs['status'] = 'ERROR';
-                    $this->outputs['remark'] = 'Directory Does Not Exists!';
+                    $this->outputs['remark'] = "Directory {$path_file} Does Not Exists!";
                 } else {
                     $this->outputs['status'] .= '<br>ERROR';
-                    $this->outputs['remark'] .= '<br>Directory Does Not Exists!';
+                    $this->outputs['remark'] .= "<br>Directory {$path_file} Does Not Exists!";
                 }
 
                 continue;
             }
 
             // Scan file in path
-            $file = scandir($path_replace, 1);
+            $file = scandir($path_file, 1);
             $total_file = count($file) - 2;
-            
+
             $date_now = date("Y-m-d H:i:s");
 
             // Check File remain
             for ($j = 0; $j < $total_file; $j++) {
-                $modify_date = date("Y-m-d H:i:s", filemtime($path_replace . '/' . $file[$j]));
+                $file_name   = $file[$j];
+                $modify_date = date("Y-m-d H:i:s", filemtime($path_file . '/' . $file_name));
                 $diff_min    = $this->dateDifference($date_now, $modify_date);
 
                 if ($diff_min > $min) {
                     if ($j === 0) {
                         $this->outputs['status'] = 'ERROR';
-                        $this->outputs['remark'] = "File " . $file[$j] . " is remain!";
+                        $this->outputs['remark'] = "File " . $file_name . " is remain!";
                     } else {
                         $this->outputs['status'] .= '<br>ERROR';
-                        $this->outputs['remark'] .= "<br>File " . $file[$j] . " is remain!";
+                        $this->outputs['remark'] .= "<br>File " . $file_name . " is remain!";
                     }
                 }
             }
