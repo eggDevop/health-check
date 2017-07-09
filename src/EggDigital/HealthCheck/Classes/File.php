@@ -24,7 +24,7 @@ class File extends Base
         // Check directory exists
         if (!$this->pathFileExists($path)) {
             $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Path not found!';
+            $this->outputs['remark']  = "Directory {$path} Does Not Exists!";
 
             return $this;
         }
