@@ -58,7 +58,7 @@ class RabbitMQ extends Base
 
             return $this;
         } else {
-            $this->outputs['status']  = '';
+            $this->outputs['status']  = 'OK';
             $this->outputs['remark']  = '';
         }
 
@@ -89,7 +89,7 @@ class RabbitMQ extends Base
 
             return $this;
         } else {
-            $this->outputs['status']  = '';
+            $this->outputs['status']  = 'OK';
             $this->outputs['remark']  = '';
         }
 
