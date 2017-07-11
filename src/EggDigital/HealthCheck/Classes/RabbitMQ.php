@@ -3,6 +3,7 @@ namespace EggDigital\HealthCheck\Classes;
 
 use EggDigital\HealthCheck\Classes\Base;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Exception\AMQPProtocolChannelException;
 
 class RabbitMQ extends Base
 {
@@ -61,9 +62,14 @@ class RabbitMQ extends Base
         $this->channel = $this->connection->channel();
 
         foreach ($queue_name as $val) {
-            list(,$messageCount,) = $this->channel->queue_declare($val, true, false, false, false);
+            try {
+                list(,$messageCount,) = $this->channel->queue_declare($val, true, false, false, false);
 
-            $this->outputs['service'] .= "<br>Number of Queue {$val} : {$messageCount}";
+                $this->outputs['service'] .= "<br>Number of Queue {$val} : {$messageCount}";
+            } catch(AMQPProtocolChannelException $e) {
+                $this->outputs['status']  = 'ERROR';
+                $this->outputs['remark']  = 'Can\'t Get Queue Name : ' . $e->getMessage();
+            }
         }
 
         return $this;
@@ -82,9 +88,14 @@ class RabbitMQ extends Base
         $this->channel = $this->connection->channel();
 
         foreach ($queue_name as $val) {
-            list(,,$consumerCount) = $this->channel->queue_declare($val, true, false, false, false);
+            try {
+                list(,,$consumerCount) = $this->channel->queue_declare($val, true, false, false, false);
 
-            $this->outputs['service'] .= "<br>Number of Worker {$val} : {$consumerCount}";
+                $this->outputs['service'] .= "<br>Number of Worker {$val} : {$consumerCount}";
+            } catch(AMQPProtocolChannelException $e) {
+                $this->outputs['status']  = 'ERROR';
+                $this->outputs['remark']  = 'Can\'t Get Queue Name : ' . $e->getMessage();
+            }
         }
 
         return $this;
