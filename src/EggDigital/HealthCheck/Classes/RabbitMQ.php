@@ -67,6 +67,8 @@ class RabbitMQ extends Base
 
                 $this->outputs['service'] .= "<br>Number of Queue {$val} : {$messageCount}";
             } catch(AMQPProtocolChannelException $e) {
+                $this->channel = $this->connection->channel();
+
                 $this->outputs['status']  = 'ERROR';
                 $this->outputs['remark']  = 'Can\'t Get Queue Name : ' . $e->getMessage();
             }
@@ -93,6 +95,8 @@ class RabbitMQ extends Base
 
                 $this->outputs['service'] .= "<br>Number of Worker {$val} : {$consumerCount}";
             } catch(AMQPProtocolChannelException $e) {
+                $this->channel = $this->connection->channel();
+                
                 $this->outputs['status']  = 'ERROR';
                 $this->outputs['remark']  = 'Can\'t Get Queue Name : ' . $e->getMessage();
             }
