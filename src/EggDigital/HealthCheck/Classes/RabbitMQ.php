@@ -57,6 +57,9 @@ class RabbitMQ extends Base
             $this->outputs['remark']  = 'Can\'t Connect to RabbitMQ';
 
             return $this;
+        } else {
+            $this->outputs['status']  = '';
+            $this->outputs['remark']  = '';
         }
 
         $this->channel = $this->connection->channel();
@@ -85,6 +88,9 @@ class RabbitMQ extends Base
             $this->outputs['remark']  = 'Can\'t Connect to RabbitMQ';
 
             return $this;
+        } else {
+            $this->outputs['status']  = '';
+            $this->outputs['remark']  = '';
         }
 
         $this->channel = $this->connection->channel();
