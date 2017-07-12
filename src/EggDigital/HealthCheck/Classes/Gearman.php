@@ -92,8 +92,8 @@ class Gearman extends Base
     public function workerRunning($queue_name)
     {
         if (!$this->gm_admin) {
-            $this->outputs['status'] = 'ERROR';
-            $this->outputs['remark'] = 'Can\'t Connect to Gearman';
+            $this->outputs['status'] .= '<br>ERROR';
+            $this->outputs['remark'] .= '<br>Can\'t Connect to Gearman';
 
             return $this;
         }
@@ -114,8 +114,8 @@ class Gearman extends Base
     public function workerOnQueue($queue_name)
     {
         if (!$this->gm_admin) {
-            $this->outputs['status'] = 'ERROR';
-            $this->outputs['remark'] = 'Can\'t Connect to Gearman';
+            $this->outputs['status'] .= '<br>ERROR';
+            $this->outputs['remark'] .= '<br>Can\'t Connect to Gearman';
 
             return $this;
         }

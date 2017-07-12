@@ -152,7 +152,7 @@ class File extends Base
     }
 
     // Method for get file extension
-    public function extensionFile($path, $file_name, $extension)
+    public function extensionFile($path, $file_name, $ext)
     {
         $file = "{$path}/{$file_name}";
 
@@ -195,7 +195,7 @@ class File extends Base
 
             // Check file remain
             foreach ($files as $file) {
-                $modify = date("Y-m-d H:i:s", filemtime($path . '/' . $file));
+                $modify = date("Y-m-d H:i:s", filemtime("{$path}/{$file}"));
                 $diff_min = $this->dateDifference($now, $modify);
 
                 // Check different min

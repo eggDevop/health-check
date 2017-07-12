@@ -52,12 +52,9 @@ class RabbitMQ extends Base
     // Method for get total queue in rabbitmq
     public function totalQueue($queue_name, $max_job = null)
     {
-        $this->outputs['status'] = 'OK';
-        $this->outputs['remark'] = '';
-
         if (!$this->connection) {
-            $this->outputs['status'] = 'ERROR';
-            $this->outputs['remark'] = 'Can\'t Connect to RabbitMQ';
+            $this->outputs['status'] .= '<br>ERROR';
+            $this->outputs['remark'] .= '<br>Can\'t Connect to RabbitMQ';
 
             return $this;
         }
@@ -76,13 +73,16 @@ class RabbitMQ extends Base
             return $this;
         }
 
-        $this->outputs['service'] .= "<br>Number of Queue {$queue_name} : {$msg_count}";
-
         // Check Max Queue
         if (!isset($max_job) && $msg_count > $max_job) {
             $this->outputs['status'] .= '<br>ERROR';
             $this->outputs['remark'] .= "<br>Queues > {$max_job}";
+            
+            return $this;
         }
+
+        $this->outputs['status']  .= '<br>OK';
+        $this->outputs['service'] .= "<br>Number of Queue {$queue_name} : {$msg_count}";
 
         return $this;
     }
@@ -90,12 +90,9 @@ class RabbitMQ extends Base
     // This method want to get amount worker
     public function workerOnQueue($queue_name)
     {
-        $this->outputs['status']  = '';
-        $this->outputs['remark']  = '';
-
         if (!$this->connection) {
-            $this->outputs['status'] = 'ERROR';
-            $this->outputs['remark'] = 'Can\'t Connect to RabbitMQ';
+            $this->outputs['status'] .= '<br>ERROR';
+            $this->outputs['remark'] .= '<br>Can\'t Connect to RabbitMQ';
 
             return $this;
         }
