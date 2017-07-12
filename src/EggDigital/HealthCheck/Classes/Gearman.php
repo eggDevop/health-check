@@ -68,6 +68,7 @@ class Gearman extends Base
         if (!isset($status[$queue_name]['msg_count'])) {
             $this->outputs['status'] .= '<br>ERROR';
             $this->outputs['remark'] .= "<br>Dose not exist queues name > {$queue_name}";
+            return $this;
         }
 
         $this->outputs['status']  .= '<br>OK';
@@ -101,11 +102,11 @@ class Gearman extends Base
         if (!isset($status[$queue_name]['workers'])) {
             $this->outputs['status'] .= '<br>ERROR';
             $this->outputs['remark'] .= "<br>Dose not exist queues name > {$queue_name}";
+            return $this;
         }
 
         $this->outputs['status']  .= '<br>OK';
         $this->outputs['service'] .= "<br>Number of Worker {$queue_name} : {$status[$queue_name]['workers']}";
-
 
         return $this;
     }
