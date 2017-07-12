@@ -53,8 +53,9 @@ class RabbitMQ extends Base
     public function totalQueue($queue_name, $max_job = null)
     {
         if (!$this->connection) {
-            $this->outputs['status'] .= '<br>ERROR';
-            $this->outputs['remark'] .= '<br>Can\'t Connect to RabbitMQ';
+            $this->outputs['service'] .= "<br>Number of Queue {$queue_name}";
+            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['remark']  .= '<br>Can\'t Connect to    RabbitMQ';
 
             return $this;
         }
@@ -64,8 +65,9 @@ class RabbitMQ extends Base
         try {
             list(,$msg_count,) = $this->channel->queue_declare($queue_name, true, false, false, false);
         } catch (AMQPProtocolChannelException $e) {
-            $this->outputs['status'] .= '<br>ERROR';
-            $this->outputs['remark'] .= '<br>Can\'t Get Queue Name : ' . $e->getMessage();
+            $this->outputs['service'] .= "<br>Number of Queue {$queue_name}";
+            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['remark']  .= '<br>Can\'t Get Queue Name : ' . $e->getMessage();
 
             // Re connect channel
             $this->channel = $this->connection->channel();
@@ -75,14 +77,15 @@ class RabbitMQ extends Base
 
         // Check Max Queue
         if (!isset($max_job) && $msg_count > $max_job) {
-            $this->outputs['status'] .= '<br>ERROR';
-            $this->outputs['remark'] .= "<br>Queues > {$max_job}";
+            $this->outputs['service'] .= "<br>Number of Queue {$queue_name} : {$msg_count}";
+            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['remark']  .= "<br>Queues > {$max_job}";
             
             return $this;
         }
 
-        $this->outputs['status']  .= '<br>OK';
         $this->outputs['service'] .= "<br>Number of Queue {$queue_name} : {$msg_count}";
+        $this->outputs['status']  .= '<br>OK';
 
         return $this;
     }
@@ -91,8 +94,9 @@ class RabbitMQ extends Base
     public function workerOnQueue($queue_name)
     {
         if (!$this->connection) {
-            $this->outputs['status'] .= '<br>ERROR';
-            $this->outputs['remark'] .= '<br>Can\'t Connect to RabbitMQ';
+            $this->outputs['service'] .= "<br>Total Worker on Queue {$queue_name}";
+            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['remark']  .= '<br>Can\'t Connect to RabbitMQ';
 
             return $this;
         }
@@ -102,6 +106,7 @@ class RabbitMQ extends Base
         try {
             list(,,$consumer_count) = $this->channel->queue_declare($queue_name, true, false, false, false);
         } catch (AMQPProtocolChannelException $e) {
+            $this->outputs['service'] .= "<br>Total Worker on Queue {$queue_name}";
             $this->outputs['status']  .= '<br>ERROR';
             $this->outputs['remark']  .= '<br>Can\'t Get Worker : ' . $e->getMessage();
 
@@ -111,8 +116,8 @@ class RabbitMQ extends Base
             return $this;
         }
 
-        $this->outputs['status']  .= '<br>OK';
         $this->outputs['service'] .= "<br>Total Worker on Queue {$queue_name} : {$consumer_count}";
+        $this->outputs['status']  .= '<br>OK';
 
         return $this;
     }
