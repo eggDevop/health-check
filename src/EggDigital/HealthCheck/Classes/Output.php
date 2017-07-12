@@ -147,10 +147,11 @@ class Output
                 : '<center><div class="circle blink" ></div></center>';
 
             // Remove tag <br>, if it frist
+            $replace_count = 1;
             foreach ($value as $key => $val) {
                 $txt = substr($val, 0, 4);
                 if ($txt === '<br>') {
-                    $value[$key] = str_replace('<br>', '', $txt, 1);
+                    $value[$key] = str_replace('<br>', '', $txt, $replace_count);
                 }
             }
 
