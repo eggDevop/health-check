@@ -56,9 +56,9 @@ class File extends Base
         $this->outputs['service'] = 'Check Read File';
         $this->outputs['url']     = $path;
 
-        try {
-            $file = "{$path}/{$file_name}";
+        $file = "{$path}/{$file_name}";
 
+        try {
             // Check directory exists
             if (!$this->pathFileExists($path)) {
                 $this->outputs['status']  = 'ERROR';
@@ -168,60 +168,40 @@ class File extends Base
     }
 
     // Method for check remain file
-    public function remainFile($path, $min)
+    public function remainFile($paths, $min)
     {
         $this->outputs['service'] = 'Check Remain File';
 
         // Set path to array
-        if (!is_array($path)) {
-            $path = [$path];
+        if (!is_array($paths)) {
+            $paths = [$paths];
         }
 
-        $total_path = count($path);
-        for ($i = 0; $i < $total_path; $i++) {
-            $path_file = $path[$i];
-
-            if ($i === 0) {
-                $this->outputs['url'] = $path_file;
-            } else {
-                $this->outputs['url'] .= '<br>' . $path_file;
-            }
+        foreach ($paths as $path) {
+            $this->outputs['url'] .= "<br>{$path}";
 
             // Check directory exists
-            if (!$this->pathFileExists($path_file)) {
-                if ($i === 0) {
-                    $this->outputs['status'] = 'ERROR';
-                    $this->outputs['remark'] = "Directory {$path_file} Does Not Exists!";
-                } else {
-                    $this->outputs['status'] .= '<br>ERROR';
-                    $this->outputs['remark'] .= "<br>Directory {$path_file} Does Not Exists!";
-                }
-
+            if (!$this->pathFileExists($path)) {
+                $this->outputs['status'] .= '<br>ERROR';
+                $this->outputs['remark'] .= "<br>Directory {$path} Does Not Exists!";
                 continue;
             }
 
             // Scan file in path
-            $file = scandir($path_file, 1);
-            $total_file = count($file) - 2;
+            $files = scandir($path, 1);
+            $files = array_diff($files, ['.', '..']);
 
-            $date_now = date("Y-m-d H:i:s");
+            $now = date('Y-m-d H:i:s');
 
-            // Check File remain
-            $count_remain = 0;
-            for ($j = 0; $j < $total_file; $j++) {
-                $file_name   = $file[$j];
-                $modify_date = date("Y-m-d H:i:s", filemtime($path_file . '/' . $file_name));
-                $diff_min    = $this->dateDifference($date_now, $modify_date);
+            // Check file remain
+            foreach ($files as $file) {
+                $modify = date("Y-m-d H:i:s", filemtime($path . '/' . $file));
+                $diff_min = $this->dateDifference($now, $modify);
 
+                // Check different min
                 if ($diff_min > $min) {
-                    $count_remain++;
-                    if ($count_remain === 1) {
-                        $this->outputs['status'] = 'ERROR';
-                        $this->outputs['remark'] = "File " . $file_name . " is remain!";
-                    } else {
-                        $this->outputs['status'] .= '<br>ERROR';
-                        $this->outputs['remark'] .= "<br>File " . $file_name . " is remain!";
-                    }
+                    $this->outputs['status'] .= '<br>ERROR';
+                    $this->outputs['remark'] .= "<br>File {$file} is remain!";
                 }
             }
         }

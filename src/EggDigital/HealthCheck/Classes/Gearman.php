@@ -47,34 +47,12 @@ class Gearman extends Base
         return $this;
     }
 
-    // This method want to get amount worker
-    // But response $this->gm_admin->getWorkers() is Bug! can't get array[0]
-    public function workerRunning()
-    {
-        if (!$this->gm_admin) {
-            $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t Connect to Gearman';
-
-            return $this;
-        }
-
-        $workers = (array)$this->gm_admin->getWorkers();
-        $wk = [];
-        foreach ($workers as $key => $value) {
-            if (strpos($key, 'GearmanAdminWorkers') !== false && strpos($key, '_workers') !== false) {
-                $wk = $value;
-                break;
-            }
-        }
-
-        $this->outputs['service'] .= '<br>Number of Worker : ' . count($wk);
-
-        return $this;
-    }
-
     // Method for get total queue in german server
-    public function totalQueue($max_job = null)
+    public function totalQueue($queue_name, $max_job = [])
     {
+        $this->outputs['status'] = '';
+        $this->outputs['remark'] = '';
+
         if (!$this->gm_admin) {
             $this->outputs['status']  = 'ERROR';
             $this->outputs['remark']  = 'Can\'t Connect to Gearman';
@@ -84,55 +62,78 @@ class Gearman extends Base
 
         // Get queue
         $res = (array)$this->gm_admin->getStatus();
-        // $res = shell_exec( "(echo status ; sleep 0.1) | netcat {$server} {$port}" );
 
-        $total = $this->getNumberOfQueueFromStatusOutput($res);
+        $status = getNumberOfQueueFromExecuteOutput($res);
 
-        $this->outputs['service'] .= "<br>Number of Queue : {$total}";
-        
-        // Check Max Queue
-        if (!empty($max_job) && $total > $max_job) {
+        foreach ($queue_name as $q) {
+            if (!isset($status[$q]['msg_count'])) {
+                continue;
+            }
+
+            $this->outputs['status']  .= '<br>OK';
+            $this->outputs['service'] .= "<br>Number of Queue {$q} : {$status[$q]['msg_count']}";
+            
+            // Check Max Queue
+            if (!isset($max_job[$q]) && $status[$q]['msg_count'] > $max_job[$q]) {
+                $this->outputs['status'] .= '<br>ERROR';
+                $this->outputs['remark'] .= "<br>Queues > {$max_job[$q]}";
+            }
+        }
+
+        return $this;
+    }
+
+    // This method want to get amount worker
+    // But response $this->gm_admin->getWorkers() is Bug! can't get array[0]
+    public function workerRunning($queue_name)
+    {
+        if (!$this->gm_admin) {
             $this->outputs['status'] = 'ERROR';
-            $this->outputs['remark'] = 'Queues > {$max_job}';
+            $this->outputs['remark'] = 'Can\'t Connect to Gearman';
+
+            return $this;
+        }
+
+        // Get queue
+        $res = (array)$this->gm_admin->getStatus();
+
+        $status = getNumberOfQueueFromExecuteOutput($res);
+
+        foreach ($queue_name as $q) {
+            if (!isset($status[$q]['workers'])) {
+                continue;
+            }
+
+            $this->outputs['status']  .= '<br>OK';
+            $this->outputs['service'] .= "<br>Number of Worker {$q} : {$status[$q]['workers']}";
         }
 
         return $this;
     }
 
     // Method for format execute output
-    // private function getNumberOfQueueFromExecuteOutput($res)
-    // {
-    //     // Define output
-    //     $total = 0;
-    //     $datas = explode("\n", $res);
-    //     if (! empty($datas)) {
-    //         foreach ($datas as $data) {
-    //             if (!empty($data) || $data !== '.') {
-    //                 // Get number of queue
-    //                 $queues = explode("\t", $data);
-    //                 $total += ((isset($queues['1']) && ! empty($queues['1'])) ? (int)$queues['1'] : 0);
-    //             }
-    //         }
-    //     }
-        
-    //     return $total;
-    // }
-    
-    // Method for format admin status output
-    private function getNumberOfQueueFromStatusOutput($datas)
+    private function getNumberOfQueueFromExecuteOutput($res)
     {
         // Define output
-        $total = 0;
-        foreach ($datas as $queues) {
-            // Loop for queue
-            foreach ($queues as $queue) {
-                if (isset($queue['0'])) {
-                    $total += (int)$queue['0'];
+        $status = [];
+        $datas = explode("\n", $datas);
+        if (! empty($datas)) {
+            foreach ($datas as $data) {
+                if (empty($data) || $line === '.') {
+                    break;
                 }
+
+                // Get number of queue
+                $queues = explode("\t", $data);
+
+                // KEY = Queue name
+                $status[$queues['0']]['msg_count'] = $queues['1'];
+                $status[$queues['0']]['running']   = $queues['2'];
+                $status[$queues['0']]['workers']   = $queues['3'];
             }
         }
         
-        return $total;
+        return $status;
     }
 
     public function __destruct()

@@ -57,7 +57,7 @@ class Output
     }
 
     private function getTitle($title)
-    { 
+    {
         return (!empty($title)) ? "<h3 class=\"text-center\">{$title}</h3>" : '';
     }
 
@@ -142,9 +142,17 @@ class Output
             $html .= '<tr>
                         <td width="5%">';
 
-            $html .=  ($value['status'] === 'OK' ) 
+            $html .=  ($value['status'] === 'OK' )
                 ? '<center><div class="circle" style="background-color: green"></div></center>'
                 : '<center><div class="circle blink" ></div></center>';
+
+            // Remove tag <br>, if it frist
+            foreach ($value as $key => $val) {
+                $txt = substr($val, 0, 4);
+                if ($txt === '<br>') {
+                    $value[$key] = str_replace('<br>', '', $txt, 1);
+                }
+            }
 
             $html .= "</td>
                 <td width=\"15%\">{$value['module']}</td>
