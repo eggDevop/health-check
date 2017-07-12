@@ -7,6 +7,7 @@ use Ibmurai\PhpGearmanAdmin\GearmanAdmin;
 class Gearman extends Base
 {
     private $gm_admin;
+    private $gm_status;
 
     public function __construct($module_name = null)
     {
@@ -34,14 +35,22 @@ class Gearman extends Base
         try {
             $time_out = (isset($conf['timeout'])) ? $conf['timeout'] : 500;
             $this->gm_admin = new GearmanAdmin($conf['host'], $conf['port'], $time_out);
-            // Check status gearman
-            if (!$this->gm_admin->getStatus()) {
-                $this->outputs['status']  = 'ERROR';
-                $this->outputs['remark']  = 'Can\'t Connect to Gearman';
-            }
         } catch (Exception $e) {
             $this->outputs['status']  = 'ERROR';
             $this->outputs['remark']  = 'Can\'t Connect to Gearman : ' . $e->getMessage();
+            return $this;
+        }
+
+        // Get gaerman status
+        if (false === $status = (array)$this->gm_admin->getStatus()) {
+            $this->outputs['status']  = 'ERROR';
+            $this->outputs['remark']  = 'Can\'t Connect to Gearman';
+            return $this;
+        }
+
+        foreach ($status as $queues) {
+            $this->gm_status = $queues;
+            break;
         }
 
         return $this;
@@ -60,12 +69,7 @@ class Gearman extends Base
             return $this;
         }
 
-        // Get queue
-        $res = (array)$this->gm_admin->getStatus();
-
-        $status = $this->getNumberOfQueueFromExecuteOutput($res);
-
-        if (!isset($status[$queue_name]['msg_count'])) {
+        if (!isset($this->gm_status[$queue_name]['0'])) {
             $this->outputs['status'] .= '<br>ERROR';
             $this->outputs['remark'] .= "<br>Dose not exist queues name > {$queue_name}";
 
@@ -73,10 +77,10 @@ class Gearman extends Base
         }
 
         $this->outputs['status']  .= '<br>OK';
-        $this->outputs['service'] .= "<br>Number of Queue {$queue_name} : {$status[$queue_name]['msg_count']}";
+        $this->outputs['service'] .= "<br>Number of Queue {$queue_name} : {$this->gm_status[$queue_name]['0']}";
         
         // Check Max Queue
-        if (!isset($max_job) && $status[$queue_name]['msg_count'] > $max_job) {
+        if (!isset($max_job) && $this->gm_status[$queue_name]['0'] > $max_job) {
             $this->outputs['status'] .= '<br>ERROR';
             $this->outputs['remark'] .= "<br>Queues > {$max_job}";
         }
@@ -85,7 +89,6 @@ class Gearman extends Base
     }
 
     // This method want to get amount worker
-    // But response $this->gm_admin->getWorkers() is Bug! can't get array[0]
     public function workerRunning($queue_name)
     {
         if (!$this->gm_admin) {
@@ -95,47 +98,39 @@ class Gearman extends Base
             return $this;
         }
 
-        // Get queue
-        $res = (array)$this->gm_admin->getStatus();
-
-        $status = $this->getNumberOfQueueFromExecuteOutput($res);
-
-        if (!isset($status[$queue_name]['workers'])) {
+        if (!isset($this->gm_status[$queue_name]['1'])) {
             $this->outputs['status'] .= '<br>ERROR';
             $this->outputs['remark'] .= "<br>Dose not exist queues name > {$queue_name}";
-            
+
             return $this;
         }
 
         $this->outputs['status']  .= '<br>OK';
-        $this->outputs['service'] .= "<br>Number of Worker {$queue_name} : {$status[$queue_name]['workers']}";
+        $this->outputs['service'] .= "<br>Number of Worker Running {$queue_name} : {$this->gm_status[$queue_name]['1']}";
 
         return $this;
     }
 
-    // Method for format execute output
-    private function getNumberOfQueueFromExecuteOutput($res)
+    public function workerOnQueue($queue_name)
     {
-        // Define output
-        $status = [];
-        $datas = explode("\n", $res);
-        if (! empty($datas)) {
-            foreach ($datas as $data) {
-                if (empty($data) || $line === '.') {
-                    break;
-                }
+        if (!$this->gm_admin) {
+            $this->outputs['status'] = 'ERROR';
+            $this->outputs['remark'] = 'Can\'t Connect to Gearman';
 
-                // Get number of queue
-                $queues = explode("\t", $data);
-
-                // KEY = Queue name
-                $status[$queues['0']]['msg_count'] = $queues['1'];
-                $status[$queues['0']]['running']   = $queues['2'];
-                $status[$queues['0']]['workers']   = $queues['3'];
-            }
+            return $this;
         }
-        
-        return $status;
+
+        if (!isset($this->gm_status[$queue_name]['2'])) {
+            $this->outputs['status'] .= '<br>ERROR';
+            $this->outputs['remark'] .= "<br>Dose not exist queues name > {$queue_name}";
+
+            return $this;
+        }
+
+        $this->outputs['status']  .= '<br>OK';
+        $this->outputs['service'] .= "<br>Total Worker on Queue {$queue_name} : {$this->gm_status[$queue_name]['2']}";
+
+        return $this;
     }
 
     public function __destruct()

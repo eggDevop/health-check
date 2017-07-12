@@ -88,7 +88,7 @@ class RabbitMQ extends Base
     }
 
     // This method want to get amount worker
-    public function workerRunning($queue_name)
+    public function workerOnQueue($queue_name)
     {
         $this->outputs['status']  = '';
         $this->outputs['remark']  = '';
@@ -115,7 +115,7 @@ class RabbitMQ extends Base
         }
 
         $this->outputs['status']  .= '<br>OK';
-        $this->outputs['service'] .= "<br>Number of Worker {$queue_name} : {$consumer_count}";
+        $this->outputs['service'] .= "<br>Total Worker on Queue {$queue_name} : {$consumer_count}";
 
         return $this;
     }
