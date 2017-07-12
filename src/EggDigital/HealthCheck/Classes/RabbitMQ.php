@@ -72,6 +72,8 @@ class RabbitMQ extends Base
 
             // Re connect channel
             $this->channel = $this->connection->channel();
+
+            return $this;
         }
 
         $this->outputs['service'] .= "<br>Number of Queue {$queue_name} : {$msg_count}";
@@ -108,6 +110,8 @@ class RabbitMQ extends Base
 
             // Re connect channel
             $this->channel = $this->connection->channel();
+
+            return $this;
         }
 
         $this->outputs['status']  .= '<br>OK';
