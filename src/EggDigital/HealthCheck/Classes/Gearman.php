@@ -97,7 +97,7 @@ class Gearman extends Base
         // Get queue
         $res = (array)$this->gm_admin->getStatus();
 
-        $status = getNumberOfQueueFromExecuteOutput($res);
+        $status = $this->getNumberOfQueueFromExecuteOutput($res);
 
         foreach ($queue_name as $q) {
             if (!isset($status[$q]['workers'])) {
