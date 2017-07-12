@@ -48,7 +48,7 @@ class Gearman extends Base
     }
 
     // Method for get total queue in german server
-    public function totalQueue($queue_name, $max_job = [])
+    public function totalQueue($queue_name, $max_job = null)
     {
         $this->outputs['status'] = '';
         $this->outputs['remark'] = '';
@@ -65,19 +65,18 @@ class Gearman extends Base
 
         $status = $this->getNumberOfQueueFromExecuteOutput($res);
 
-        foreach ($queue_name as $q) {
-            if (!isset($status[$q]['msg_count'])) {
-                continue;
-            }
+        if (!isset($status[$queue_name]['msg_count'])) {
+            $this->outputs['status'] .= '<br>ERROR';
+            $this->outputs['remark'] .= "<br>Dose not exist queues name > {$queue_name}";
+        }
 
-            $this->outputs['status']  .= '<br>OK';
-            $this->outputs['service'] .= "<br>Number of Queue {$q} : {$status[$q]['msg_count']}";
-            
-            // Check Max Queue
-            if (!isset($max_job[$q]) && $status[$q]['msg_count'] > $max_job[$q]) {
-                $this->outputs['status'] .= '<br>ERROR';
-                $this->outputs['remark'] .= "<br>Queues > {$max_job[$q]}";
-            }
+        $this->outputs['status']  .= '<br>OK';
+        $this->outputs['service'] .= "<br>Number of Queue {$queue_name} : {$status[$queue_name]['msg_count']}";
+        
+        // Check Max Queue
+        if (!isset($max_job) && $status[$queue_name]['msg_count'] > $max_job) {
+            $this->outputs['status'] .= '<br>ERROR';
+            $this->outputs['remark'] .= "<br>Queues > {$max_job}";
         }
 
         return $this;
@@ -99,14 +98,14 @@ class Gearman extends Base
 
         $status = $this->getNumberOfQueueFromExecuteOutput($res);
 
-        foreach ($queue_name as $q) {
-            if (!isset($status[$q]['workers'])) {
-                continue;
-            }
-
-            $this->outputs['status']  .= '<br>OK';
-            $this->outputs['service'] .= "<br>Number of Worker {$q} : {$status[$q]['workers']}";
+        if (!isset($status[$queue_name]['workers'])) {
+            $this->outputs['status'] .= '<br>ERROR';
+            $this->outputs['remark'] .= "<br>Dose not exist queues name > {$queue_name}";
         }
+
+        $this->outputs['status']  .= '<br>OK';
+        $this->outputs['service'] .= "<br>Number of Worker {$queue_name} : {$status[$queue_name]['workers']}";
+
 
         return $this;
     }

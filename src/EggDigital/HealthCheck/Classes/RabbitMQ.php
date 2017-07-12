@@ -50,7 +50,7 @@ class RabbitMQ extends Base
     }
 
     // Method for get total queue in rabbitmq
-    public function totalQueue($queue_name, $max_job = [])
+    public function totalQueue($queue_name, $max_job = null)
     {
         $this->outputs['status'] = 'OK';
         $this->outputs['remark'] = '';
@@ -64,25 +64,22 @@ class RabbitMQ extends Base
 
         $this->channel = $this->connection->channel();
 
-        foreach ($queue_name as $q) {
-            try {
-                list(,$msg_count,) = $this->channel->queue_declare($q, true, false, false, false);
-            } catch (AMQPProtocolChannelException $e) {
-                $this->outputs['status'] .= '<br>ERROR';
-                $this->outputs['remark'] .= '<br>Can\'t Get Queue Name : ' . $e->getMessage();
+        try {
+            list(,$msg_count,) = $this->channel->queue_declare($queue_name, true, false, false, false);
+        } catch (AMQPProtocolChannelException $e) {
+            $this->outputs['status'] .= '<br>ERROR';
+            $this->outputs['remark'] .= '<br>Can\'t Get Queue Name : ' . $e->getMessage();
 
-                // Re connect channel
-                $this->channel = $this->connection->channel();
-                continue;
-            }
+            // Re connect channel
+            $this->channel = $this->connection->channel();
+        }
 
-            $this->outputs['service'] .= "<br>Number of Queue {$q} : {$msg_count}";
+        $this->outputs['service'] .= "<br>Number of Queue {$queue_name} : {$msg_count}";
 
-            // Check Max Queue
-            if (!isset($max_job[$q]) && $msg_count > $max_job[$q]) {
-                $this->outputs['status'] .= '<br>ERROR';
-                $this->outputs['remark'] .= "<br>Queues > {$max_job[$q]}";
-            }
+        // Check Max Queue
+        if (!isset($max_job) && $msg_count > $max_job) {
+            $this->outputs['status'] .= '<br>ERROR';
+            $this->outputs['remark'] .= "<br>Queues > {$max_job}";
         }
 
         return $this;
@@ -99,26 +96,22 @@ class RabbitMQ extends Base
             $this->outputs['remark'] = 'Can\'t Connect to RabbitMQ';
 
             return $this;
-        } else {
         }
 
         $this->channel = $this->connection->channel();
 
-        foreach ($queue_name as $q) {
-            try {
-                list(,,$consumer_count) = $this->channel->queue_declare($q, true, false, false, false);
-            } catch (AMQPProtocolChannelException $e) {
-                $this->outputs['status']  .= '<br>ERROR';
-                $this->outputs['remark']  .= '<br>Can\'t Get Worker : ' . $e->getMessage();
+        try {
+            list(,,$consumer_count) = $this->channel->queue_declare($queue_name, true, false, false, false);
+        } catch (AMQPProtocolChannelException $e) {
+            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['remark']  .= '<br>Can\'t Get Worker : ' . $e->getMessage();
 
-                // Re connect channel
-                $this->channel = $this->connection->channel();
-                continue;
-            }
-
-            $this->outputs['status']  .= '<br>OK';
-            $this->outputs['service'] .= "<br>Number of Worker {$q} : {$consumer_count}";
+            // Re connect channel
+            $this->channel = $this->connection->channel();
         }
+
+        $this->outputs['status']  .= '<br>OK';
+        $this->outputs['service'] .= "<br>Number of Worker {$queue_name} : {$consumer_count}";
 
         return $this;
     }
