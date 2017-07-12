@@ -56,8 +56,8 @@ class RabbitMQ extends Base
         $this->outputs['remark'] = '';
 
         if (!$this->connection) {
-            $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t Connect to RabbitMQ';
+            $this->outputs['status'] = 'ERROR';
+            $this->outputs['remark'] = 'Can\'t Connect to RabbitMQ';
 
             return $this;
         }
@@ -79,7 +79,7 @@ class RabbitMQ extends Base
             $this->outputs['service'] .= "<br>Number of Queue {$q} : {$msg_count}";
 
             // Check Max Queue
-            if (!isset($max_job[$q]) && $status[$q]['msg_count'] > $max_job[$q]) {
+            if (!isset($max_job[$q]) && $msg_count > $max_job[$q]) {
                 $this->outputs['status'] .= '<br>ERROR';
                 $this->outputs['remark'] .= "<br>Queues > {$max_job[$q]}";
             }
