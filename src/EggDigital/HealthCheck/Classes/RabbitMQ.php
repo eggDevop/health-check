@@ -24,8 +24,8 @@ class RabbitMQ extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->require_config) . ')';
+            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['remark']  .= '<br>Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
         }
@@ -38,12 +38,12 @@ class RabbitMQ extends Base
             
             // Check status rabbitmq
             if (!$this->connection->isConnected()) {
-                $this->outputs['status']  = 'ERROR';
-                $this->outputs['remark']  = 'Can\'t Connect to RabbitMQ';
+                $this->outputs['status']  .= '<br>ERROR';
+                $this->outputs['remark']  .= '<br>Can\'t Connect to RabbitMQ';
             }
         } catch (Exception $e) {
-            $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t Connect to RabbitMQ : ' . $e->getMessage();
+            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['remark']  .= '<br>Can\'t Connect to RabbitMQ : ' . $e->getMessage();
         }
 
         return $this;

@@ -23,8 +23,8 @@ class Gearman extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->require_config) . ')';
+            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['remark']  .= '<br>Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
         }
@@ -36,15 +36,15 @@ class Gearman extends Base
             $time_out = (isset($conf['timeout'])) ? $conf['timeout'] : 500;
             $this->gm_admin = new GearmanAdmin($conf['host'], $conf['port'], $time_out);
         } catch (Exception $e) {
-            $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t Connect to Gearman : ' . $e->getMessage();
+            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['remark']  .= '<br>Can\'t Connect to Gearman : ' . $e->getMessage();
             return $this;
         }
 
         // Get gaerman status
         if (false === $status = (array)$this->gm_admin->getStatus()) {
-            $this->outputs['status']  = 'ERROR';
-            $this->outputs['remark']  = 'Can\'t Connect to Gearman';
+            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['remark']  .= '<br>Can\'t Connect to Gearman';
             return $this;
         }
 
