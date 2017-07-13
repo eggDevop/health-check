@@ -14,7 +14,6 @@ class Mysql extends Base
 
         $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Mysql';
         $this->require_config = ['host', 'username', 'password', 'dbname'];
-
     }
 
     public function connect($conf)
@@ -23,7 +22,7 @@ class Mysql extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
@@ -36,15 +35,15 @@ class Mysql extends Base
             // Connect to mysql
             $this->conn = new PDO("mysql:host={$conf['host']};dbname={$conf['dbname']};charset=utf8", $conf['username'], $conf['password']);
 
-            // Set the PDO error mode to exception
+            // Set the PDO <span class="status-error">error</span> mode to exception
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             if (!$this->conn) {
-                $this->outputs['status']  = 'ERROR';
+                $this->outputs['status']  = '<span class="status-error">ERROR</span>';
                 $this->outputs['remark']  = 'Can\'t Connect to Database';
             }
         } catch (PDOException $e) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Can\'t Connect to Database : ' . $e->getMessage();
         }
 
@@ -56,7 +55,7 @@ class Mysql extends Base
         $this->outputs['service'] = 'Check Query Datas';
 
         if (!$this->conn) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Can\'t Connect to Database';
 
             return $this;
@@ -66,7 +65,7 @@ class Mysql extends Base
         try {
             $this->conn->query($sql);
         } catch (PDOException  $e) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Can\'t Query Datas : ' . $e->getMessage();
         }
 

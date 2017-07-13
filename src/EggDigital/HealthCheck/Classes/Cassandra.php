@@ -20,7 +20,7 @@ class Cassandra extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
@@ -37,11 +37,11 @@ class Cassandra extends Base
             $this->conn = $connection->connect();
         
             if (!$this->conn) {
-                $this->outputs['status']  = 'ERROR';
+                $this->outputs['status']  = '<span class="status-error">ERROR</span>';
                 $this->outputs['remark']  = 'Can\'t Connect to Database';
             }
         } catch (Exception $e) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Can\'t Connect to Database : ' . $e->getMessage();
         }
 
@@ -53,7 +53,7 @@ class Cassandra extends Base
         $this->outputs['service'] = 'Check Query Datas';
 
         if (!$this->conn) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Can\'t Connect to Database';
 
             return $this;
@@ -72,11 +72,11 @@ class Cassandra extends Base
             $result = $statement->getResponse();
             $result = $result->fetchRow()['count'];
             if (!$result) {
-                $this->outputs['status']  = 'ERROR';
+                $this->outputs['status']  = '<span class="status-error">ERROR</span>';
                 $this->outputs['remark']  = 'Can\'t Query Datas';
             }
         } catch (Exception  $e) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Can\'t Query Datas : ' . $e->getMessage();
         }
 

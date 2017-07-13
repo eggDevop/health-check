@@ -24,7 +24,7 @@ class RabbitMQ extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
@@ -38,11 +38,11 @@ class RabbitMQ extends Base
             
             // Check status rabbitmq
             if (!$this->connection->isConnected()) {
-                $this->outputs['status']  .= '<br>ERROR';
+                $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
                 $this->outputs['remark']  .= '<br>Can\'t Connect to RabbitMQ';
             }
         } catch (Exception $e) {
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Can\'t Connect to RabbitMQ : ' . $e->getMessage();
         }
 
@@ -54,8 +54,8 @@ class RabbitMQ extends Base
     {
         if (!$this->connection) {
             $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b>";
-            $this->outputs['status']  .= '<br>ERROR';
-            $this->outputs['remark']  .= '<br>Can\'t Connect to    RabbitMQ';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
+            $this->outputs['remark']  .= '<br>Can\'t Connect to RabbitMQ';
 
             return $this;
         }
@@ -66,7 +66,7 @@ class RabbitMQ extends Base
             list(,$msg_count,) = $this->channel->queue_declare($queue_name, true, false, false, false);
         } catch (AMQPProtocolChannelException $e) {
             $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b>";
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Can\'t Get Queue Name : ' . $e->getMessage();
 
             // Re connect channel
@@ -78,14 +78,14 @@ class RabbitMQ extends Base
         // Check Max Queue
         if (!isset($max_job) && $msg_count > $max_job) {
             $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b> : {$msg_count}";
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= "<br>Queues > {$max_job}";
             
             return $this;
         }
 
         $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b> : {$msg_count}";
-        $this->outputs['status']  .= '<br>OK';
+        $this->outputs['status']  .= '<br><span class="status-success">OK</span>';
 
         return $this;
     }
@@ -95,7 +95,7 @@ class RabbitMQ extends Base
     {
         if (!$this->connection) {
             $this->outputs['service'] .= "<br>Total Worker on Queue <b>{$queue_name}</b>";
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Can\'t Connect to RabbitMQ';
 
             return $this;
@@ -107,7 +107,7 @@ class RabbitMQ extends Base
             list(,,$consumer_count) = $this->channel->queue_declare($queue_name, true, false, false, false);
         } catch (AMQPProtocolChannelException $e) {
             $this->outputs['service'] .= "<br>Total Worker on Queue <b>{$queue_name}</b>";
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Can\'t Get Worker : ' . $e->getMessage();
 
             // Re connect channel
@@ -117,7 +117,7 @@ class RabbitMQ extends Base
         }
 
         $this->outputs['service'] .= "<br>Total Worker on Queue <b>{$queue_name}</b> : {$consumer_count}";
-        $this->outputs['status']  .= '<br>OK';
+        $this->outputs['status']  .= '<br><span class="status-success">OK</span>';
 
         return $this;
     }

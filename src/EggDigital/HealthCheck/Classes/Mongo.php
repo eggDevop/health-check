@@ -13,7 +13,6 @@ class Mongo extends Base
 
         $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Mongo';
         $this->require_config = ['host', 'port', 'dbname'];
-
     }
 
     public function connect($conf)
@@ -22,7 +21,7 @@ class Mongo extends Base
         $this->conf = $conf;
         // Validate parameter
         if (false === $this->validParams($this->conf)) {
-            $this->outputs['status'] = 'ERROR';
+            $this->outputs['status'] = '<span class="status-error">ERROR</span>';
             $this->outputs['remark'] = 'Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
@@ -31,7 +30,7 @@ class Mongo extends Base
         // Set url
         $this->outputs['url'] = $this->conf['host'].':'.$this->conf['port'];
 
-        try{
+        try {
             if (empty($this->conf['username']) && empty($this->conf['password'])) {
                 $this->conn = new \MongoDB\Driver\Manager('mongodb://' . $this->conf['host'] . ':' . $this->conf['port']);
                 // $mongodb = (new \MongoDB\Client('mongodb://'.$this->conf['host'].':'.$this->conf['port'].'/'. $this->conf['dbname']));
@@ -40,17 +39,15 @@ class Mongo extends Base
             }
 
             if (!$this->conn->getServers()) {
-                $this->outputs['status'] = 'ERROR';
+                $this->outputs['status'] = '<span class="status-error">ERROR</span>';
                 $this->outputs['remark'] = 'Can\'t connect to database';
             }
-
-        }catch (\Exception $e) {
-            $this->outputs['status'] = 'ERROR';
+        } catch (\Exception $e) {
+            $this->outputs['status'] = '<span class="status-error">ERROR</span>';
             $this->outputs['remark'] = 'Can\'t connect to database : ' . $e->getMessage();
         }
 
         return $this;
-
     }
     public function query($filter = [])
     {
@@ -58,7 +55,7 @@ class Mongo extends Base
         // Query
         try {
             if (!$this->conn->getServers()) {
-                $this->outputs['status'] = 'ERROR';
+                $this->outputs['status'] = '<span class="status-error">ERROR</span>';
                 $this->outputs['remark'] = 'Can\'t connect to database';
 
                 return $this;
@@ -69,11 +66,11 @@ class Mongo extends Base
             $rows = $this->conn->executeQuery($this->conf['dbname'].".".$this->conf['collection'], $query);
 
             if (!$rows) {
-                $this->outputs['status'] = 'ERROR';
+                $this->outputs['status'] = '<span class="status-error">ERROR</span>';
                 $this->outputs['remark'] = 'Can\'t query datas';
             }
         } catch (\Exception $e) {
-            $this->outputs['status'] = 'ERROR';
+            $this->outputs['status'] = '<span class="status-error">ERROR</span>';
             $this->outputs['remark'] = 'Can\'t query datas : ' . $e->getMessage();
         }
 

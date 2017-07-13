@@ -28,11 +28,11 @@ class Curl extends Base
             curl_close($ch);
 
             if (!$output) {
-                $this->outputs['status']  = 'ERROR';
+                $this->outputs['status']  = '<span class="status-error">ERROR</span>';
                 $this->outputs['remark']  = 'Can\'t get url';
             }
         } catch (Exception $e) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Can\'t get url : ' . $e->getMessage();
         }
 

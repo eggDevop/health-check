@@ -22,7 +22,7 @@ class Redis extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
@@ -37,11 +37,11 @@ class Redis extends Base
             ]);
         
             if (!$redis) {
-                $this->outputs['status']  = 'ERROR';
+                $this->outputs['status']  = '<span class="status-error">ERROR</span>';
                 $this->outputs['remark']  = 'Can\'t Connect to Redis';
             }
         } catch (Exception $e) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Can\'t Connect to Redis : ' . $e->getMessage();
         }
 
@@ -51,7 +51,7 @@ class Redis extends Base
     public function totalQueue($keys, $max_job = null)
     {
         if (!$this->redis) {
-            $this->outputs['status']  = 'ERROR';
+            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  = 'Can\'t Connect to Redis';
 
             return $this;
@@ -67,7 +67,7 @@ class Redis extends Base
         
         // Check Max Queue
         if (!empty($max_job) && $total > $max_job) {
-            $this->outputs['status'] = 'ERROR';
+            $this->outputs['status'] = '<span class="status-error">ERROR</span>';
             $this->outputs['remark'] = 'Queues > {$max_job}';
         }
 

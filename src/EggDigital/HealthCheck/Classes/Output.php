@@ -41,15 +41,18 @@ class Output
             .circle {
                 width: 20px;
                 height: 20px;
-                background: red;
                 -moz-border-radius: 50px;
                 -webkit-border-radius: 50px;
                 border-radius: 50px;
             }
+            .circle-success { background: green; }
+            .circle-error { background: red; }
 
-            td {
-                white-space: nowrap;
-            }
+            .status-success { color: red; }
+            .status-error { color: green; }
+
+            td { white-space: nowrap; }
+            
             </style>
         ';
 
@@ -143,8 +146,8 @@ class Output
                         <td width="5%">';
 
             $html .= (strpos($value['status'], 'ERROR') === false )
-                ? '<center><div class="circle" style="background-color: green"></div></center>'
-                : '<center><div class="circle blink" ></div></center>';
+                ? '<center><div class="circle circle-success"></div></center>'
+                : '<center><div class="circle circle-error blink"></div></center>';
 
             // Remove tag <br>, if it frist
             $replace_count = 1;

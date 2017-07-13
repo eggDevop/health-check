@@ -23,7 +23,7 @@ class Gearman extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Require parameter (' . implode(',', $this->require_config) . ')';
 
             return $this;
@@ -36,14 +36,14 @@ class Gearman extends Base
             $time_out = (isset($conf['timeout'])) ? $conf['timeout'] : 500;
             $this->gm_admin = new GearmanAdmin($conf['host'], $conf['port'], $time_out);
         } catch (Exception $e) {
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Can\'t Connect to Gearman : ' . $e->getMessage();
             return $this;
         }
 
         // Get gaerman status
         if (false === $status = (array)$this->gm_admin->getStatus()) {
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Can\'t Connect to Gearman';
             return $this;
         }
@@ -61,7 +61,7 @@ class Gearman extends Base
     {
         if (!$this->gm_admin) {
             $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b>";
-            $this->outputs['status']  .= 'ERROR';
+            $this->outputs['status']  .= '<span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= 'Can\'t Connect to Gearman';
 
             return $this;
@@ -69,8 +69,8 @@ class Gearman extends Base
 
         if (!isset($this->gm_status[$queue_name]['0'])) {
             $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b>";
-            $this->outputs['status']  .= '<br>ERROR';
-            $this->outputs['remark']  .= '<br>Can\'t Connect to Queue';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
+            $this->outputs['remark']  .= '<br>Does not exits queue name';
 
             return $this;
         }
@@ -78,14 +78,14 @@ class Gearman extends Base
         // Check Max Queue
         if (!isset($max_job) && $this->gm_status[$queue_name]['0'] > $max_job) {
             $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b> : {$this->gm_status[$queue_name]['0']}";
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= "<br>Queues > {$max_job}";
 
             return $this;
         }
 
         $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b> : {$this->gm_status[$queue_name]['0']}";
-        $this->outputs['status']  .= '<br>OK';
+        $this->outputs['status']  .= '<br><span class="status-success">OK</span>';
 
         return $this;
     }
@@ -95,7 +95,7 @@ class Gearman extends Base
     {
         if (!$this->gm_admin) {
             $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b>";
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Can\'t Connect to Gearman';
 
             return $this;
@@ -103,14 +103,14 @@ class Gearman extends Base
 
         if (!isset($this->gm_status[$queue_name]['1'])) {
             $this->outputs['service'] .= "<br>Number of Worker Running on Queue <b>{$queue_name}</b>";
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Can\'t Get Worker Runing';
 
             return $this;
         }
 
         $this->outputs['service'] .= "<br>Number of Worker Running on Queue <b>{$queue_name}</b> : {$this->gm_status[$queue_name]['1']}";
-        $this->outputs['status']  .= '<br>OK';
+        $this->outputs['status']  .= '<br><span class="status-success">OK</span>';
 
         return $this;
     }
@@ -119,22 +119,22 @@ class Gearman extends Base
     {
         if (!$this->gm_admin) {
             $this->outputs['service'] .= "<br>Total Worker on Queue <b>{$queue_name}</b>";
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Can\'t Connect to Gearman';
 
             return $this;
         }
 
         if (!isset($this->gm_status[$queue_name]['2'])) {
-            $this->outputs['service'] .= "<br>Total Worker on Queue <b>{$queue_name}</b> : {$this->gm_status[$queue_name]['2']}";
-            $this->outputs['status']  .= '<br>ERROR';
+            $this->outputs['service'] .= "<br>Total Worker on Queue <b>{$queue_name}</b>";
+            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
             $this->outputs['remark']  .= '<br>Can\'t Get Worker';
 
             return $this;
         }
 
         $this->outputs['service'] .= "<br>Total Worker on Queue <b>{$queue_name}</b> : {$this->gm_status[$queue_name]['2']}";
-        $this->outputs['status']  .= '<br>OK';
+        $this->outputs['status']  .= '<br><span class="status-success">OK</span>';
 
         return $this;
     }
