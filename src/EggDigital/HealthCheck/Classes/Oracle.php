@@ -21,8 +21,8 @@ class Oracle extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->require_config) . ')';
+            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['remark'] .= '<span class="status-error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
 
             return $this;
         }
@@ -35,12 +35,12 @@ class Oracle extends Base
             $this->conn = oci_connect($conf['username'], $conf['password'], "{$conf['host']}:{$conf['port']}/{$conf['dbname']}", $conf['charset']);
 
             if (!$this->conn) {
-                $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-                $this->outputs['remark']  = 'Can\'t Connect to Database';
+                $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+                $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database</span>';
             }
         } catch (\Exception $e) {
-            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-            $this->outputs['remark']  = 'Can\'t Connect to Database : ' . $e->getMessage();
+            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database : ' . $e->getMessage() . '</span>';
         }
 
         return $this;
@@ -51,8 +51,8 @@ class Oracle extends Base
         $this->outputs['service'] = 'Check Query Datas';
 
         if (!$this->conn) {
-            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-            $this->outputs['remark']  = 'Can\'t Connect to Database';
+            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database</span>';
 
             return $this;
         }
@@ -64,12 +64,12 @@ class Oracle extends Base
             oci_free_statement($orc_parse);
 
             if (!$orc_exec) {
-                $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-                $this->outputs['remark']  = 'Can\'t Query Datas';
+                $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+                $this->outputs['remark'] .= '<span class="status-error">Can\'t Query Datas</span>';
             }
         } catch (\Exception $e) {
-            $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-            $this->outputs['remark']  = 'Can\'t Query Datas : ' . $e->getMessage();
+            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['remark'] .= '<span class="status-error">Can\'t Query Datas : ' . $e->getMessage() . '</span>';
         }
 
         return $this;

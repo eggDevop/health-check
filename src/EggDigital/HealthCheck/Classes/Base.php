@@ -10,7 +10,7 @@ abstract class Base
         'service'  => '',
         'url'      => '',
         'response' => 0,
-        'status'   => '<span class="status-success">OK</span>',
+        'status'   => 'OK',
         'remark'   => ''
     ];
 

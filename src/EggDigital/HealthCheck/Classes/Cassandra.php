@@ -21,7 +21,7 @@ class Cassandra extends Base
         // Validate parameter
         if (false === $this->validParams($conf)) {
             $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-            $this->outputs['remark']  = 'Require parameter (' . implode(',', $this->require_config) . ')';
+            $this->outputs['remark']  = '<span class="status-error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
 
             return $this;
         }
@@ -38,11 +38,11 @@ class Cassandra extends Base
         
             if (!$this->conn) {
                 $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-                $this->outputs['remark']  = 'Can\'t Connect to Database';
+                $this->outputs['remark']  = '<span class="status-error">Can\'t Connect to Database</span>';
             }
         } catch (Exception $e) {
             $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-            $this->outputs['remark']  = 'Can\'t Connect to Database : ' . $e->getMessage();
+            $this->outputs['remark']  = '<span class="status-error">Can\'t Connect to Database : ' . $e->getMessage() . '</span>';
         }
 
         return $this;
@@ -54,7 +54,7 @@ class Cassandra extends Base
 
         if (!$this->conn) {
             $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-            $this->outputs['remark']  = 'Can\'t Connect to Database';
+            $this->outputs['remark']  = '<span class="status-error">Can\'t Connect to Database</span>';
 
             return $this;
         }
@@ -73,11 +73,11 @@ class Cassandra extends Base
             $result = $result->fetchRow()['count'];
             if (!$result) {
                 $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-                $this->outputs['remark']  = 'Can\'t Query Datas';
+                $this->outputs['remark']  = '<span class="status-error">Can\'t Query Datas</span>';
             }
         } catch (Exception  $e) {
             $this->outputs['status']  = '<span class="status-error">ERROR</span>';
-            $this->outputs['remark']  = 'Can\'t Query Datas : ' . $e->getMessage();
+            $this->outputs['remark']  = '<span class="status-error">Can\'t Query Datas : ' . $e->getMessage() . '</span>';
         }
 
         return $this;
