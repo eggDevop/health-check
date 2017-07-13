@@ -48,8 +48,8 @@ class Output
             .circle-success { background: green; }
             .circle-error { background: red; }
 
-            .status-success { color: red; }
-            .status-error { color: green; }
+            .status-success { color: green; }
+            .status-error { color: red; }
 
             td { white-space: nowrap; }
             
