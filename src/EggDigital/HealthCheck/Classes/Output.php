@@ -48,7 +48,7 @@ class Output
             .circle-success { background: green; }
             .circle-error { background: red; }
 
-            .status-error { color: red; }
+            .error { color: red; }
 
             td { white-space: nowrap; }
             

@@ -24,11 +24,11 @@ class Socket extends Base
             $socket        = @stream_socket_client($remote_socket, $err_no, $err_str, 2.5, $flags);
 
             if (!$socket) {
-                $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+                $this->outputs['status'] .= '<span class="error">ERROR</span>';
                 $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Socket</span>';
             }
         } catch (Exception $e) {
-            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['status'] .= '<span class="error">ERROR</span>';
             $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Socket : ' . $e->getMessage() . '</span>';
         }
 

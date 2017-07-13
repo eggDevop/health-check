@@ -22,7 +22,7 @@ class Mysql extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['status'] .= '<span class="error">ERROR</span>';
             $this->outputs['remark'] .= '<span class="status-error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
 
             return $this;
@@ -35,15 +35,15 @@ class Mysql extends Base
             // Connect to mysql
             $this->conn = new PDO("mysql:host={$conf['host']};dbname={$conf['dbname']};charset=utf8", $conf['username'], $conf['password']);
 
-            // Set the PDO <span class="status-error">error</span> mode to exception
+            // Set the PDO <span class="error">ERROR</span> mode to exception
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             if (!$this->conn) {
-                $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+                $this->outputs['status'] .= '<span class="error">ERROR</span>';
                 $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database</span>';
             }
         } catch (PDOException $e) {
-            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['status'] .= '<span class="error">ERROR</span>';
             $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database : ' . $e->getMessage() . '</span>';
         }
 
@@ -55,7 +55,7 @@ class Mysql extends Base
         $this->outputs['service'] = 'Check Query Datas';
 
         if (!$this->conn) {
-            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['status'] .= '<span class="error">ERROR</span>';
             $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database</span>';
 
             return $this;
@@ -65,7 +65,7 @@ class Mysql extends Base
         try {
             $this->conn->query($sql);
         } catch (PDOException  $e) {
-            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['status'] .= '<span class="error">ERROR</span>';
             $this->outputs['remark'] .= '<span class="status-error">Can\'t Query Datas : ' . $e->getMessage() . '</span>';
         }
 

@@ -24,7 +24,7 @@ class RabbitMQ extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status'] .= '<br><span class="status-error">ERROR</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
             $this->outputs['remark'] .= '<br><span class="status-error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
 
             return $this;
@@ -38,11 +38,11 @@ class RabbitMQ extends Base
             
             // Check status rabbitmq
             if (!$this->connection->isConnected()) {
-                $this->outputs['status'] .= '<br><span class="status-error">ERROR</span>';
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
                 $this->outputs['remark'] .= '<br><span class="status-error">Can\'t Connect to RabbitMQ</span>';
             }
         } catch (Exception $e) {
-            $this->outputs['status'] .= '<br><span class="status-error">ERROR</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
             $this->outputs['remark'] .= '<br><span class="status-error">Can\'t Connect to RabbitMQ : ' . $e->getMessage() . '</span>';
         }
 
@@ -54,7 +54,7 @@ class RabbitMQ extends Base
     {
         if (!$this->connection) {
             $this->outputs['service'] .= "<br><span class=\"status-error\">Number of Queue <b>{$queue_name}</b></span>";
-            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
+            $this->outputs['status']  .= '<br><span class="error">ERROR</span>';
             $this->outputs['remark']  .= '<br><span class="status-error">Can\'t Connect to RabbitMQ</span>';
 
             return $this;
@@ -66,7 +66,7 @@ class RabbitMQ extends Base
             list(,$msg_count,) = $this->channel->queue_declare($queue_name, true, false, false, false);
         } catch (AMQPProtocolChannelException $e) {
             $this->outputs['service'] .= "<br><span class=\"status-error\">Number of Queue <b>{$queue_name}</b></span>";
-            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
+            $this->outputs['status']  .= '<br><span class="error">ERROR</span>';
             $this->outputs['remark']  .= '<br><span class="status-error">Can\'t Get Queue Name : ' . $e->getMessage() . '</span>';
 
             // Re connect channel
@@ -78,7 +78,7 @@ class RabbitMQ extends Base
         // Check Max Queue
         if (!isset($max_job) && $msg_count > $max_job) {
             $this->outputs['service'] .= "<br><span class=\"status-error\">Number of Queue <b>{$queue_name}</b> : {$msg_count}</span>";
-            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
+            $this->outputs['status']  .= '<br><span class="error">ERROR</span>';
             $this->outputs['remark']  .= "<br><span class=\"status-error\">Queues > {$max_job}</span>";
             
             return $this;
@@ -95,7 +95,7 @@ class RabbitMQ extends Base
     {
         if (!$this->connection) {
             $this->outputs['service'] .= "<br><span class=\"status-error\">Total Worker on Queue <b>{$queue_name}</b></span>";
-            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
+            $this->outputs['status']  .= '<br><span class="error">ERROR</span>';
             $this->outputs['remark']  .= '<br><span class="status-error">Can\'t Connect to RabbitMQ</span>';
 
             return $this;
@@ -107,7 +107,7 @@ class RabbitMQ extends Base
             list(,,$consumer_count) = $this->channel->queue_declare($queue_name, true, false, false, false);
         } catch (AMQPProtocolChannelException $e) {
             $this->outputs['service'] .= "<br><span class=\"status-error\">Total Worker on Queue <b>{$queue_name}</b></span>";
-            $this->outputs['status']  .= '<br><span class="status-error">ERROR</span>';
+            $this->outputs['status']  .= '<br><span class="error">ERROR</span>';
             $this->outputs['remark']  .= '<br><span class="status-error">Can\'t Get Worker : ' . $e->getMessage() . '</span>';
 
             // Re connect channel

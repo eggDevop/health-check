@@ -21,7 +21,7 @@ class Mongo extends Base
         $this->conf = $conf;
         // Validate parameter
         if (false === $this->validParams($this->conf)) {
-            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['status'] .= '<span class="error">ERROR</span>';
             $this->outputs['remark'] .= '<span class="status-error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
 
             return $this;
@@ -39,11 +39,11 @@ class Mongo extends Base
             }
 
             if (!$this->conn->getServers()) {
-                $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+                $this->outputs['status'] .= '<span class="error">ERROR</span>';
                 $this->outputs['remark'] .= '<span class="status-error">Can\'t connect to database</span>';
             }
         } catch (\Exception $e) {
-            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['status'] .= '<span class="error">ERROR</span>';
             $this->outputs['remark'] .= '<span class="status-error">Can\'t connect to database : ' . $e->getMessage() . '</span>';
         }
 
@@ -55,7 +55,7 @@ class Mongo extends Base
         // Query
         try {
             if (!$this->conn->getServers()) {
-                $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+                $this->outputs['status'] .= '<span class="error">ERROR</span>';
                 $this->outputs['remark'] .= '<span class="status-error">Can\'t connect to database</span>';
 
                 return $this;
@@ -66,11 +66,11 @@ class Mongo extends Base
             $rows = $this->conn->executeQuery($this->conf['dbname'].".".$this->conf['collection'], $query);
 
             if (!$rows) {
-                $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+                $this->outputs['status'] .= '<span class="error">ERROR</span>';
                 $this->outputs['remark'] .= '<span class="status-error">Can\'t query datas</span>';
             }
         } catch (\Exception $e) {
-            $this->outputs['status'] .= '<span class="status-error">ERROR</span>';
+            $this->outputs['status'] .= '<span class="error">ERROR</span>';
             $this->outputs['remark'] .= '<span class="status-error">Can\'t query datas : ' . $e->getMessage() . '</span>';
         }
 
