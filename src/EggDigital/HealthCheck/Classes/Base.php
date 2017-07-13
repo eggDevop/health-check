@@ -9,7 +9,7 @@ abstract class Base
         'module'   => '',
         'service'  => '',
         'url'      => '',
-        'response' => 0.00,
+        'response' => 0,
         'status'   => 'OK',
         'remark'   => ''
     ];

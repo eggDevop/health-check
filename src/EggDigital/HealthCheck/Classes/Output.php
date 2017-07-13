@@ -142,9 +142,9 @@ class Output
             $html .= '<tr>
                         <td width="5%">';
 
-            $html .= (strpos('ERROR', $value['status']) > 0 )
-                ? '<center><div class="circle blink" ></div></center>'
-                : '<center><div class="circle" style="background-color: green"></div></center>';
+            $html .= (strpos($value['status'], 'ERROR') === false )
+                ? '<center><div class="circle" style="background-color: green"></div></center>'
+                : '<center><div class="circle blink" ></div></center>';
 
             // Remove tag <br>, if it frist
             $replace_count = 1;

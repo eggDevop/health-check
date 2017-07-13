@@ -60,7 +60,7 @@ class Gearman extends Base
     public function totalQueue($queue_name, $max_job = null)
     {
         if (!$this->gm_admin) {
-            $this->outputs['service'] .= "<br>Number of Queue {$queue_name}";
+            $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b>";
             $this->outputs['status']  .= 'ERROR';
             $this->outputs['remark']  .= 'Can\'t Connect to Gearman';
 
@@ -68,7 +68,7 @@ class Gearman extends Base
         }
 
         if (!isset($this->gm_status[$queue_name]['0'])) {
-            $this->outputs['service'] .= "<br>Number of Queue {$queue_name}";
+            $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b>";
             $this->outputs['status']  .= '<br>ERROR';
             $this->outputs['remark']  .= '<br>Can\'t Connect to Queue';
 
@@ -77,14 +77,14 @@ class Gearman extends Base
         
         // Check Max Queue
         if (!isset($max_job) && $this->gm_status[$queue_name]['0'] > $max_job) {
-            $this->outputs['service'] .= "<br>Number of Queue {$queue_name} : {$this->gm_status[$queue_name]['0']}";
+            $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b> : {$this->gm_status[$queue_name]['0']}";
             $this->outputs['status']  .= '<br>ERROR';
             $this->outputs['remark']  .= "<br>Queues > {$max_job}";
 
             return $this;
         }
 
-        $this->outputs['service'] .= "<br>Number of Queue {$queue_name} : {$this->gm_status[$queue_name]['0']}";
+        $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b> : {$this->gm_status[$queue_name]['0']}";
         $this->outputs['status']  .= '<br>OK';
 
         return $this;
@@ -94,7 +94,7 @@ class Gearman extends Base
     public function workerRunning($queue_name)
     {
         if (!$this->gm_admin) {
-            $this->outputs['service'] .= "<br>Number of Queue {$queue_name}";
+            $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b>";
             $this->outputs['status']  .= '<br>ERROR';
             $this->outputs['remark']  .= '<br>Can\'t Connect to Gearman';
 
@@ -102,14 +102,14 @@ class Gearman extends Base
         }
 
         if (!isset($this->gm_status[$queue_name]['1'])) {
-            $this->outputs['service'] .= "<br>Number of Worker Running on Queue {$queue_name}";
+            $this->outputs['service'] .= "<br>Number of Worker Running on Queue <b>{$queue_name}</b>";
             $this->outputs['status']  .= '<br>ERROR';
             $this->outputs['remark']  .= '<br>Can\'t Get Worker Runing';
 
             return $this;
         }
 
-        $this->outputs['service'] .= "<br>Number of Worker Running on Queue {$queue_name} : {$this->gm_status[$queue_name]['1']}";
+        $this->outputs['service'] .= "<br>Number of Worker Running on Queue <b>{$queue_name}</b> : {$this->gm_status[$queue_name]['1']}";
         $this->outputs['status']  .= '<br>OK';
 
         return $this;
@@ -118,7 +118,7 @@ class Gearman extends Base
     public function workerOnQueue($queue_name)
     {
         if (!$this->gm_admin) {
-            $this->outputs['service'] .= "<br>Total Worker on Queue {$queue_name}";
+            $this->outputs['service'] .= "<br>Total Worker on Queue <b>{$queue_name}</b>";
             $this->outputs['status']  .= '<br>ERROR';
             $this->outputs['remark']  .= '<br>Can\'t Connect to Gearman';
 
@@ -126,14 +126,14 @@ class Gearman extends Base
         }
 
         if (!isset($this->gm_status[$queue_name]['2'])) {
-            $this->outputs['service'] .= "<br>Total Worker on Queue {$queue_name} : {$this->gm_status[$queue_name]['2']}";
+            $this->outputs['service'] .= "<br>Total Worker on Queue <b>{$queue_name}</b> : {$this->gm_status[$queue_name]['2']}";
             $this->outputs['status']  .= '<br>ERROR';
             $this->outputs['remark']  .= '<br>Can\'t Get Worker';
 
             return $this;
         }
 
-        $this->outputs['service'] .= "<br>Total Worker on Queue {$queue_name} : {$this->gm_status[$queue_name]['2']}";
+        $this->outputs['service'] .= "<br>Total Worker on Queue <b>{$queue_name}</b> : {$this->gm_status[$queue_name]['2']}";
         $this->outputs['status']  .= '<br>OK';
 
         return $this;
