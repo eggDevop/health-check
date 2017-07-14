@@ -7,10 +7,11 @@ use Predis;
 class Redis extends Base
 {
     private $redis;
+    private $start_time;
 
     public function __construct($module_name = null)
     {
-        parent::__construct();
+        $this->start_time = microtime(true);
 
         $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Redis';
         $this->require_config = ['host'];
@@ -22,8 +23,8 @@ class Redis extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
 
             return $this;
         }
@@ -36,14 +37,22 @@ class Redis extends Base
                 'port'   => (isset($conf['port'])) ? $conf['port'] : 6379
             ]);
         
-            if (!$redis) {
-                $this->outputs['status'] .= '<span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Redis</span>';
+            if (!$this->redis) {
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Redis</span>';
+
+                return $this;
             }
         } catch (Exception $e) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Redis : ' . $e->getMessage() . '</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Redis : ' . $e->getMessage() . '</span>';
+
+            return $this;
         }
+
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
 
         return $this;
     }
@@ -51,8 +60,8 @@ class Redis extends Base
     public function totalQueue($keys, $max_job = null)
     {
         if (!$this->redis) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Redis</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Redis</span>';
 
             return $this;
         }
@@ -65,19 +74,22 @@ class Redis extends Base
 
         // Check Max Queue
         if (!empty($max_job) && $total > $max_job) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Queues > {$max_job}</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Queues > {$max_job}</span>';
             
             return $this;
         }
 
+        // Success
         $this->outputs['service'] .= "<br>Number of Queue : {$total}";
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
 
         return $this;
     }
 
     public function __destruct()
     {
-        parent::__destruct();
+        $this->outputs['response'] += (microtime(true) - $this->start_time);
     }
 }

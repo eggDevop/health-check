@@ -5,9 +5,11 @@ use EggDigital\HealthCheck\Classes\Base;
 
 class Socket extends Base
 {
+    private $start_time;
+
     public function __construct($module_name = null)
     {
-        parent::__construct();
+        $this->start_time = microtime(true);
 
         $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Socket';
         $this->require_config = ['host', 'port'];
@@ -17,26 +19,34 @@ class Socket extends Base
     {
         try {
             $remote_socket = ($server === null) ? "unix://{$conf['host']}" : "tcp://{$conf['host']}:{$conf['port']}";
-            $err_no         = '';
-            $err_str        = '';
+            $err_no        = '';
+            $err_str       = '';
             $flags         = STREAM_CLIENT_CONNECT;
             $flags         = $flags | STREAM_CLIENT_PERSISTENT;
             $socket        = @stream_socket_client($remote_socket, $err_no, $err_str, 2.5, $flags);
 
             if (!$socket) {
-                $this->outputs['status'] .= '<span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Socket</span>';
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Socket</span>';
+
+                return $this;
             }
         } catch (Exception $e) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Socket : ' . $e->getMessage() . '</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Socket : ' . $e->getMessage() . '</span>';
+
+            return $this;
         }
 
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
+        
         return $this;
     }
 
     public function __destruct()
     {
-        parent::__destruct();
+        $this->outputs['response'] += (microtime(true) - $this->start_time);
     }
 }

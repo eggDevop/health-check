@@ -6,9 +6,11 @@ use Cassandra\Connection;
 
 class Cassandra extends Base
 {
+    private $start_time;
+
     public function __construct($module_name = null)
     {
-        parent::__construct();
+        $this->start_time = microtime(true);
 
         $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Cassandra';
         $this->require_config = ['node'];
@@ -20,8 +22,8 @@ class Cassandra extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status']  = '<span class="error">ERROR</span>';
-            $this->outputs['remark']  = '<span class="status-error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
 
             return $this;
         }
@@ -37,13 +39,21 @@ class Cassandra extends Base
             $this->conn = $connection->connect();
         
             if (!$this->conn) {
-                $this->outputs['status']  = '<span class="error">ERROR</span>';
-                $this->outputs['remark']  = '<span class="status-error">Can\'t Connect to Database</span>';
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Database</span>';
+
+                return $this;
             }
         } catch (Exception $e) {
-            $this->outputs['status']  = '<span class="error">ERROR</span>';
-            $this->outputs['remark']  = '<span class="status-error">Can\'t Connect to Database : ' . $e->getMessage() . '</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Database : ' . $e->getMessage() . '</span>';
+
+            return $this;
         }
+
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
 
         return $this;
     }
@@ -53,16 +63,14 @@ class Cassandra extends Base
         $this->outputs['service'] = 'Check Query Datas';
 
         if (!$this->conn) {
-            $this->outputs['status']  = '<span class="error">ERROR</span>';
-            $this->outputs['remark']  = '<span class="status-error">Can\'t Connect to Database</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Database</span>';
 
             return $this;
         }
 
         // Defualt CQL
-        if (empty($cql)) {
-            $cql = "SELECT count(*) FROM noti_request WHERE app_id = 14 ALLOW FILTERING";
-        }
+        $cql = (!empty($cql)) ? $cql : 'SELECT count(*) FROM noti_request WHERE app_id = 14 ALLOW FILTERING';
 
         try {
             // Query
@@ -72,19 +80,27 @@ class Cassandra extends Base
             $result = $statement->getResponse();
             $result = $result->fetchRow()['count'];
             if (!$result) {
-                $this->outputs['status']  = '<span class="error">ERROR</span>';
-                $this->outputs['remark']  = '<span class="status-error">Can\'t Query Datas</span>';
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= '<br><span class="error">Can\'t Query Datas</span>';
+
+                return $this;
             }
         } catch (Exception  $e) {
-            $this->outputs['status']  = '<span class="error">ERROR</span>';
-            $this->outputs['remark']  = '<span class="status-error">Can\'t Query Datas : ' . $e->getMessage() . '</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Query Datas : ' . $e->getMessage() . '</span>';
+
+            return $this;
         }
 
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
+        
         return $this;
     }
 
     public function __destruct()
     {
-        parent::__destruct();
+        $this->outputs['response'] += (microtime(true) - $this->start_time);
     }
 }

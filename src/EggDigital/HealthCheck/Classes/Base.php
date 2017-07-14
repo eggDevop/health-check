@@ -10,14 +10,9 @@ abstract class Base
         'service'  => '',
         'url'      => '',
         'response' => 0,
-        'status'   => 'OK',
+        'status'   => '',
         'remark'   => ''
     ];
-
-    public function __construct()
-    {
-        $this->start_time = microtime(true);
-    }
 
     public function get()
     {
@@ -33,10 +28,5 @@ abstract class Base
             }
         }
         return true;
-    }
-
-    public function __destruct()
-    {
-        $this->outputs['response'] = microtime(true) - $this->start_time;
     }
 }

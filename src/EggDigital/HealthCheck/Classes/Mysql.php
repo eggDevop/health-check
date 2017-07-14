@@ -7,10 +7,11 @@ use PDO;
 class Mysql extends Base
 {
     private $conn;
+    private $start_time;
 
     public function __construct($module_name = null)
     {
-        parent::__construct();
+        $this->start_time = microtime(true);
 
         $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Mysql';
         $this->require_config = ['host', 'username', 'password', 'dbname'];
@@ -22,8 +23,8 @@ class Mysql extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
 
             return $this;
         }
@@ -39,13 +40,21 @@ class Mysql extends Base
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             if (!$this->conn) {
-                $this->outputs['status'] .= '<span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database</span>';
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Database</span>';
+
+                return $this;
             }
         } catch (PDOException $e) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database : ' . $e->getMessage() . '</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Database : ' . $e->getMessage() . '</span>';
+
+            return $this;
         }
+
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
 
         return $this;
     }
@@ -55,8 +64,8 @@ class Mysql extends Base
         $this->outputs['service'] = 'Check Query Datas';
 
         if (!$this->conn) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Database</span>';
 
             return $this;
         }
@@ -65,15 +74,21 @@ class Mysql extends Base
         try {
             $this->conn->query($sql);
         } catch (PDOException  $e) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Can\'t Query Datas : ' . $e->getMessage() . '</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Query Datas : ' . $e->getMessage() . '</span>';
+
+            return $this;
         }
+
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
 
         return $this;
     }
 
     public function __destruct()
     {
-        parent::__destruct();
+        $this->outputs['response'] += (microtime(true) - $this->start_time);
     }
 }

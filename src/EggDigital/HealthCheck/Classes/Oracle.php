@@ -6,10 +6,11 @@ use EggDigital\HealthCheck\Classes\Base;
 class Oracle extends Base
 {
     private $conn;
+    private $start_time;
 
     public function __construct($module_name = null)
     {
-        parent::__construct();
+        $this->start_time = microtime(true);
 
         $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Oracle';
         $this->require_config = ['host', 'port', 'username', 'password', 'dbname', 'charset'];
@@ -21,8 +22,8 @@ class Oracle extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
 
             return $this;
         }
@@ -35,27 +36,38 @@ class Oracle extends Base
             $this->conn = oci_connect($conf['username'], $conf['password'], "{$conf['host']}:{$conf['port']}/{$conf['dbname']}", $conf['charset']);
 
             if (!$this->conn) {
-                $this->outputs['status'] .= '<span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database</span>';
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Database</span>';
+                
+                return $this;
             }
         } catch (\Exception $e) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database : ' . $e->getMessage() . '</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Database : ' . $e->getMessage() . '</span>';
+            
+            return $this;
         }
+
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
 
         return $this;
     }
 
-    public function query($sql)
+    public function query($sql = null)
     {
         $this->outputs['service'] = 'Check Query Datas';
 
         if (!$this->conn) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Can\'t Connect to Database</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to Database</span>';
 
             return $this;
         }
+
+        // Get SQL
+        $sql = (!empty($sql)) ? $sql : 'SELECT TO_CHAR(SYSDATE, \'MM-DD-YYYY HH24:MI:SS\') "NOW" FROM DUAL';
 
         // Query
         try {
@@ -64,19 +76,27 @@ class Oracle extends Base
             oci_free_statement($orc_parse);
 
             if (!$orc_exec) {
-                $this->outputs['status'] .= '<span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<span class="status-error">Can\'t Query Datas</span>';
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= '<br><span class="error">Can\'t Query Datas</span>';
+
+                return $this;
             }
         } catch (\Exception $e) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Can\'t Query Datas : ' . $e->getMessage() . '</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Query Datas : ' . $e->getMessage() . '</span>';
+
+            return $this;
         }
 
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
+        
         return $this;
     }
 
     public function __destruct()
     {
-        parent::__destruct();
+        $this->outputs['response'] += (microtime(true) - $this->start_time);
     }
 }

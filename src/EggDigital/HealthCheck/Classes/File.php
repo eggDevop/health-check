@@ -7,10 +7,11 @@ class File extends Base
 {
     private $handle;
     private $file;
-    
+    private $start_time;
+
     public function __construct($module_name = null)
     {
-        parent::__construct();
+        $this->start_time = microtime(true);
 
         $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'File';
     }
@@ -23,8 +24,8 @@ class File extends Base
 
         // Check directory exists
         if (!$this->pathFileExists($path)) {
-            $this->outputs['status']  .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']  .= "<br><span class=\"status-error\">Directory {$path} Does Not Exists!</span>";
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= "<br><span class=\"error\">Directory {$path} Does Not Exists!</span>";
 
             return $this;
         }
@@ -37,15 +38,23 @@ class File extends Base
             $written = fwrite($handle, "TEST WRITE FILE");
 
             fclose($handle);
-
-            if (!$written) {
-                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<br><span class="status-error">Can\'t Write File</span>';
-            }
         } catch (Exception $e) {
             $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<br><span class="status-error">Can\'t Write File : ' . $e->getMessage() . '</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Write File : ' . $e->getMessage() . '</span>';
+
+            return $this;
         }
+
+        if (!$written) {
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Write File</span>';
+
+            return $this;
+        }
+
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
 
         return $this;
     }
@@ -62,7 +71,7 @@ class File extends Base
             // Check directory exists
             if (!$this->pathFileExists($path)) {
                 $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark'] .= "<br><span class=\"status-error\">Directory {$path} Does Not Exists!</span>";
+                $this->outputs['remark'] .= "<br><span class=\"error\">Directory {$path} Does Not Exists!</span>";
 
                 return $this;
             }
@@ -70,7 +79,7 @@ class File extends Base
             // Check File exists
             if (!$this->fileExists($file)) {
                 $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<br><span class="status-error">File Not Found!</span>';
+                $this->outputs['remark'] .= '<br><span class="error">File Not Found!</span>';
 
                 return $this;
             }
@@ -82,13 +91,21 @@ class File extends Base
             fclose($handle);
 
             if (!$contents) {
-                $this->outputs['status']  .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark']  .= '<br><span class="status-error">Can\'t Read File</span>';
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= '<br><span class="error">Can\'t Read File</span>';
+
+                return $this;
             }
         } catch (Exception $e) {
             $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<br><span class="status-error">Can\'t Read File : ' . $e->getMessage() . '</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Read File : ' . $e->getMessage() . '</span>';
+
+            return $this;
         }
+
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
 
         return $this;
     }
@@ -106,8 +123,8 @@ class File extends Base
         // Check directory exists
         foreach ([$path1, $path2] as $path) {
             if (!$this->pathFileExists($path)) {
-                $this->outputs['status']  .= '<span class="error">ERROR</span>';
-                $this->outputs['remark']  .= "Directory {$path} Does Not Exists!";
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= "<br><span class=\"error\">Directory {$path} Does Not Exists!</span>";
 
                 return $this;
             }
@@ -120,8 +137,8 @@ class File extends Base
         // Check file exists
         foreach ([$file1, $file2] as $file) {
             if (!$this->fileExists($file1)) {
-                $this->outputs['status'] .= '<span class="error">ERROR</span>';
-                $this->outputs['remark'] .= "<span class=\"status-error\">File {$file} Not Found!</span>";
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= "<br><span class=\"error\">File {$file} Not Found!</span>";
 
                 return $this;
             }
@@ -130,23 +147,29 @@ class File extends Base
         try {
             // Compare file size
             if (filesize($file1) !== filesize($file2)) {
-                $this->outputs['status'] .= '<span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<span class="status-error">Size of File is Not Equal!</span>';
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= '<br><span class="error">Size of File is Not Equal!</span>';
 
                 return $this;
             }
 
             // Compare md5
             if (md5_file($file1) !== md5_file($file2)) {
-                $this->outputs['status'] .= '<span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<span class="status-error">Content of File is Not Equal!</span>';
+                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark'] .= '<br><span class="error">Content of File is Not Equal!</span>';
 
                 return $this;
             }
         } catch (Exception $e) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<span class="status-error">Can\'t Compare File : ' . $e->getMessage() . '</span>';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Can\'t Compare File : ' . $e->getMessage() . '</span>';
+
+            return $this;
         }
+
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
 
         return $this;
     }
@@ -160,9 +183,15 @@ class File extends Base
         $this->outputs['url']     = $file;
 
         if ($ext !== $this->getExtension($file)) {
-            $this->outputs['status'] .= '<span class="error">ERROR</span>';
-            $this->outputs['remark'] .= 'Extension File Not Match';
+            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark'] .= '<br><span class="error">Extension File Not Match</span>';
+
+            return $this;
         }
+
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
 
         return $this;
     }
@@ -183,7 +212,7 @@ class File extends Base
             // Check directory exists
             if (!$this->pathFileExists($path)) {
                 $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark'] .= "<br><span class=\"status-error\">Directory {$path} Does Not Exists!</span>";
+                $this->outputs['remark'] .= "<br><span class=\"error\">Directory {$path} Does Not Exists!</span>";
                 continue;
             }
 
@@ -201,10 +230,16 @@ class File extends Base
                 // Check different min
                 if ($diff_min > $min) {
                     $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-                    $this->outputs['remark'] .= "<br><span class=\"status-error\">File {$file} is remain!</span>";
+                    $this->outputs['remark'] .= "<br><span class=\"error\">File {$file} is remain!</span>";
+
+                    return $this;
                 }
             }
         }
+
+        // Success
+        $this->outputs['status'] .= '<br>OK';
+        $this->outputs['remark'] .= '<br>';
 
         return $this;
     }
@@ -236,9 +271,7 @@ class File extends Base
     // Method for open file
     private function openFile($file, $mode)
     {
-        $handle = fopen($file, $mode);
-
-        return $handle;
+        return fopen($file, $mode);
     }
 
     public function deleteData()
@@ -327,6 +360,6 @@ class File extends Base
 
     public function __destruct()
     {
-        parent::__destruct();
+        $this->outputs['response'] += (microtime(true) - $this->start_time);
     }
 }
