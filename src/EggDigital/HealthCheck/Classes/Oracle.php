@@ -57,7 +57,7 @@ class Oracle extends Base
 
     public function query($sql = null)
     {
-        $this->outputs['service'] = 'Check Query Datas';
+        $this->outputs['service'] .= '<br>Check Query Datas';
 
         if (!$this->conn) {
             $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
