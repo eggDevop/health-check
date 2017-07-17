@@ -137,6 +137,18 @@ class Output
         return (!empty($title)) ? "<h3>{$title}</h3>" : '';
     }
 
+    private function removeFristBr($val)
+    {
+        $len = strlen($val) - 1;
+        $br  = substr($val, 0, 4);
+
+        if ($br === '<br>') {
+            return substr($val, 4, $len);
+        }
+        
+        return null;
+    }
+
     private function getTableRows($datas)
     {
         $html = '';
@@ -149,13 +161,8 @@ class Output
                 : '<center><div class="circle circle-error blink"></div></center>';
 
             // Remove tag <br>, if it frist
-            $replace_count = 1;
-            foreach ($value as $key => $val) {
-                $txt = substr($val, 0, 4);
-                if ($txt === '<br>') {
-                    $value[$key] = str_replace('<br>', '', $txt, $replace_count);
-                }
-            }
+            $value['status'] = $this->removeFristBr($value['status']);
+            $value['remark'] = $this->removeFristBr($value['remark']);
 
             $html .= "</td>
                 <td width=\"15%\">{$value['module']}</td>
