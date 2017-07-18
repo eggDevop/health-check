@@ -62,7 +62,7 @@ class HealthCheck
 
     private static function curl($module_name)
     {
-        return new \EggDigital\HealthCheck\Classes\Api($module_name);
+        return new \EggDigital\HealthCheck\Classes\Curl($module_name);
     }
 
     private static function rabbitmq($module_name)
