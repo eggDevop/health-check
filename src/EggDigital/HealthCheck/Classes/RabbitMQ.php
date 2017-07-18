@@ -25,8 +25,9 @@ class RabbitMQ extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<br><span class="error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
+            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark']   .= '<br><span class="error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
+            $this->outputs['response'] += (microtime(true) - $this->start_time);
 
             return $this;
         }
@@ -39,21 +40,24 @@ class RabbitMQ extends Base
             
             // Check status rabbitmq
             if (!$this->connection->isConnected()) {
-                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to RabbitMQ</span>';
+                $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to RabbitMQ</span>';
+                $this->outputs['response'] += (microtime(true) - $this->start_time);
 
                 return $this;
             }
         } catch (Exception $e) {
-            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<br><span class="error">Can\'t Connect to RabbitMQ : ' . $e->getMessage() . '</span>';
+            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to RabbitMQ : ' . $e->getMessage() . '</span>';
+            $this->outputs['response'] += (microtime(true) - $this->start_time);
 
             return $this;
         }
 
         // Success
-        $this->outputs['status'] .= '<br>OK';
-        $this->outputs['remark'] .= '<br>';
+        $this->outputs['status']   .= '<br>OK';
+        $this->outputs['remark']   .= '<br>';
+        $this->outputs['response'] += (microtime(true) - $this->start_time);
 
         return $this;
     }
@@ -62,9 +66,10 @@ class RabbitMQ extends Base
     public function totalQueue($queue_name, $max_job = null)
     {
         if (!$this->connection) {
-            $this->outputs['service'] .= "<br><span class=\"error\">Number of Queue <b>{$queue_name}</b></span>";
-            $this->outputs['status']  .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']  .= '<br><span class="error">Can\'t Connect to RabbitMQ</span>';
+            $this->outputs['service']  .= "<br><span class=\"error\">Number of Queue <b>{$queue_name}</b></span>";
+            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to RabbitMQ</span>';
+            $this->outputs['response'] += (microtime(true) - $this->start_time);
 
             return $this;
         }
@@ -82,22 +87,26 @@ class RabbitMQ extends Base
             // Re connect channel
             $this->channel = $this->connection->channel();
 
+            $this->outputs['response'] += (microtime(true) - $this->start_time);
+
             return $this;
         }
 
         // Check Max Queue
         if (!isset($max_job) && $msg_count > $max_job) {
-            $this->outputs['service'] .= "<br><span class=\"error\">Number of Queue <b>{$queue_name}</b> : {$msg_count}</span>";
-            $this->outputs['status']  .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']  .= "<br><span class=\"error\">Queues > {$max_job}</span>";
+            $this->outputs['service']  .= "<br><span class=\"error\">Number of Queue <b>{$queue_name}</b> : {$msg_count}</span>";
+            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark']   .= "<br><span class=\"error\">Queues > {$max_job}</span>";
+            $this->outputs['response'] += (microtime(true) - $this->start_time);
             
             return $this;
         }
 
         // Success
-        $this->outputs['service'] .= "<br>Number of Queue <b>{$queue_name}</b> : {$msg_count}";
-        $this->outputs['status']  .= '<br>OK';
-        $this->outputs['remark']  .= !empty($max_job) ? "<br>Queues > {$max_job} alert" : '<br>';
+        $this->outputs['service']  .= "<br>Number of Queue <b>{$queue_name}</b> : {$msg_count}";
+        $this->outputs['status']   .= '<br>OK';
+        $this->outputs['remark']   .= !empty($max_job) ? "<br>Queues > {$max_job} alert" : '<br>';
+        $this->outputs['response'] += (microtime(true) - $this->start_time);
 
         return $this;
     }
@@ -106,9 +115,10 @@ class RabbitMQ extends Base
     public function workerOnQueue($queue_name)
     {
         if (!$this->connection) {
-            $this->outputs['service'] .= "<br><span class=\"error\">Total Worker on Queue <b>{$queue_name}</b></span>";
-            $this->outputs['status']  .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']  .= '<br><span class="error">Can\'t Connect to RabbitMQ</span>';
+            $this->outputs['service']  .= "<br><span class=\"error\">Total Worker on Queue <b>{$queue_name}</b></span>";
+            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to RabbitMQ</span>';
+            $this->outputs['response'] += (microtime(true) - $this->start_time);
 
             return $this;
         }
@@ -126,19 +136,17 @@ class RabbitMQ extends Base
             // Re connect channel
             $this->channel = $this->connection->channel();
 
+            $this->outputs['response'] += (microtime(true) - $this->start_time);
+
             return $this;
         }
 
         // Success
-        $this->outputs['service'] .= "<br>Total Worker on Queue <b>{$queue_name}</b> : {$consumer_count}";
-        $this->outputs['status']  .= '<br>OK';
-        $this->outputs['remark']  .= '<br>';
+        $this->outputs['service']  .= "<br>Total Worker on Queue <b>{$queue_name}</b> : {$consumer_count}";
+        $this->outputs['status']   .= '<br>OK';
+        $this->outputs['remark']   .= '<br>';
+        $this->outputs['response'] += (microtime(true) - $this->start_time);
 
         return $this;
-    }
-
-    public function __destruct()
-    {
-        $this->outputs['response'] += (microtime(true) - $this->start_time);
     }
 }

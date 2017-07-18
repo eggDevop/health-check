@@ -24,8 +24,9 @@ class Mongo extends Base
         $this->conf = $conf;
         // Validate parameter
         if (false === $this->validParams($this->conf)) {
-            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<br><span class="error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
+            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark']   .= '<br><span class="error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
+            $this->outputs['response'] += (microtime(true) - $this->start_time);
 
             return $this;
         }
@@ -41,21 +42,24 @@ class Mongo extends Base
             // $mongodb = (new \MongoDB\Client('mongodb://'.$this->conf['host'].':'.$this->conf['port'].'/'. $this->conf['dbname']));
 
             if (!$this->conn->getServers()) {
-                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<br><span class="error">Can\'t connect to database</span>';
+                $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark']   .= '<br><span class="error">Can\'t connect to database</span>';
+                $this->outputs['response'] += (microtime(true) - $this->start_time);
 
                 return $this;
             }
         } catch (\Exception $e) {
-            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<br><span class="error">Can\'t connect to database : ' . $e->getMessage() . '</span>';
+            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark']   .= '<br><span class="error">Can\'t connect to database : ' . $e->getMessage() . '</span>';
+            $this->outputs['response'] += (microtime(true) - $this->start_time);
 
             return $this;
         }
 
         // Success
-        $this->outputs['status'] .= '<br>OK';
-        $this->outputs['remark'] .= '<br>';
+        $this->outputs['status']   .= '<br>OK';
+        $this->outputs['remark']   .= '<br>';
+        $this->outputs['response'] += (microtime(true) - $this->start_time);
 
         return $this;
     }
@@ -66,8 +70,9 @@ class Mongo extends Base
         // Query
         try {
             if (!$this->conn->getServers()) {
-                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<br><span class="error">Can\'t connect to database</span>';
+                $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark']   .= '<br><span class="error">Can\'t connect to database</span>';
+                $this->outputs['response'] += (microtime(true) - $this->start_time);
 
                 return $this;
             }
@@ -77,27 +82,25 @@ class Mongo extends Base
             $rows = $this->conn->executeQuery("{$this->conf['dbname']}.{$this->conf['collection']}", $query);
 
             if (!$rows) {
-                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<br><span class="error">Can\'t query datas</span>';
+                $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark']   .= '<br><span class="error">Can\'t query datas</span>';
+                $this->outputs['response'] += (microtime(true) - $this->start_time);
 
                 return $this;
             }
         } catch (\Exception $e) {
-            $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark'] .= '<br><span class="error">Can\'t query datas : ' . $e->getMessage() . '</span>';
+            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+            $this->outputs['remark']   .= '<br><span class="error">Can\'t query datas : ' . $e->getMessage() . '</span>';
+            $this->outputs['response'] += (microtime(true) - $this->start_time);
 
             return $this;
         }
 
         // Success
-        $this->outputs['status'] .= '<br>OK';
-        $this->outputs['remark'] .= '<br>';
+        $this->outputs['status']   .= '<br>OK';
+        $this->outputs['remark']   .= '<br>';
+        $this->outputs['response'] += (microtime(true) - $this->start_time);
 
         return $this;
-    }
-
-    public function __destruct()
-    {
-        $this->outputs['response'] += (microtime(true) - $this->start_time);
     }
 }

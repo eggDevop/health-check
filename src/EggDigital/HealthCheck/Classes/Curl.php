@@ -46,11 +46,8 @@ class Curl extends Base
             }
         }
         
-        return $this;
-    }
-
-    public function __destruct()
-    {
         $this->outputs['response'] += (microtime(true) - $this->start_time);
+        
+        return $this;
     }
 }
