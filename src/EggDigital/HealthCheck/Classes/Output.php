@@ -96,7 +96,7 @@ class Output
                     continue;
                 }
 
-                if ($data['status'] !== 'OK') {
+                if (strpos($data['status'], 'ERROR')) {
                     $status = false;
                     break;
                 }
