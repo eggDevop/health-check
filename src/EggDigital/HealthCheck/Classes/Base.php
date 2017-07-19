@@ -29,4 +29,20 @@ abstract class Base
         }
         return true;
     }
+
+    protected function setOutputs($datas = [])
+    {
+        $error = false;
+        if (array_key_exists('status', $datas) && $datas['status'] === 'ERROR') {
+            $error = ture;
+        }
+
+        foreach ($datas as $key => $value) {
+            if (isset($this->outputs[$key]) && $key !== 'response') {
+                $this->outputs[$key] .= ($error) ? "<br><span class=\"error\">{$value}</span>" : "<br>{$value}";
+            } else {
+                $this->outputs['response'] += (microtime(true) - $value);
+            }
+        }
+    }
 }

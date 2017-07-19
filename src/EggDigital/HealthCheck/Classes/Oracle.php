@@ -22,9 +22,11 @@ class Oracle extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']   .= '<br><span class="error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
-            $this->outputs['response'] += (microtime(true) - $this->start_time);
+            $this->setOutputs([
+                'status'   => 'ERROR',
+                'remark'   => 'Require parameter (' . implode(',', $this->require_config) . ')',
+                'response' => $this->start_time
+            ]);
 
             return $this;
         }
@@ -37,24 +39,30 @@ class Oracle extends Base
             $this->conn = oci_connect($conf['username'], $conf['password'], "{$conf['host']}:{$conf['port']}/{$conf['dbname']}", $conf['charset']);
 
             if (!$this->conn) {
-                $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to Database</span>';
-                $this->outputs['response'] += (microtime(true) - $this->start_time);
+                $this->setOutputs([
+                    'status'   => 'ERROR',
+                    'remark'   => 'Can\'t Connect to Database',
+                    'response' => $this->start_time
+                ]);
                 
                 return $this;
             }
-        } catch (\Exception $e) {
-            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to Database : ' . $e->getMessage() . '</span>';
-            $this->outputs['response'] += (microtime(true) - $this->start_time);
+        } catch (Exception $e) {
+            $this->setOutputs([
+                'status'   => 'ERROR',
+                'remark'   => 'Can\'t Connect to Database : ' . $e->getMessage(),
+                'response' => $this->start_time
+            ]);
             
             return $this;
         }
 
         // Success
-        $this->outputs['status']   .= '<br>OK';
-        $this->outputs['remark']   .= '<br>';
-        $this->outputs['response'] += (microtime(true) - $this->start_time);
+        $this->setOutputs([
+            'status'   => 'OK',
+            'remark'   => '',
+            'response' => $this->start_time
+        ]);
 
         return $this;
     }
@@ -64,9 +72,11 @@ class Oracle extends Base
         $this->outputs['service'] .= '<br>Check Query Datas';
 
         if (!$this->conn) {
-            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to Database</span>';
-            $this->outputs['response'] += (microtime(true) - $this->start_time);
+            $this->setOutputs([
+                'status'   => 'ERROR',
+                'remark'   => 'Can\'t Connect to Database',
+                'response' => $this->start_time
+            ]);
 
             return $this;
         }
@@ -81,24 +91,30 @@ class Oracle extends Base
             oci_free_statement($orc_parse);
 
             if (!$orc_exec) {
-                $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark']   .= '<br><span class="error">Can\'t Query Datas</span>';
-                $this->outputs['response'] += (microtime(true) - $this->start_time);
+                $this->setOutputs([
+                    'status'   => 'ERROR',
+                    'remark'   => 'Can\'t Query Datas',
+                    'response' => $this->start_time
+                ]);
 
                 return $this;
             }
-        } catch (\Exception $e) {
-            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']   .= '<br><span class="error">Can\'t Query Datas : ' . $e->getMessage() . '</span>';
-            $this->outputs['response'] += (microtime(true) - $this->start_time);
+        } catch (Exception $e) {
+            $this->setOutputs([
+                'status'   => 'ERROR',
+                'remark'   => 'Can\'t Query Datas : ' . $e->getMessage(),
+                'response' => $this->start_time
+            ]);
 
             return $this;
         }
 
         // Success
-        $this->outputs['status']   .= '<br>OK';
-        $this->outputs['remark']   .= '<br>';
-        $this->outputs['response'] += (microtime(true) - $this->start_time);
+        $this->setOutputs([
+            'status'   => 'OK',
+            'remark'   => '',
+            'response' => $this->start_time
+        ]);
         
         return $this;
     }

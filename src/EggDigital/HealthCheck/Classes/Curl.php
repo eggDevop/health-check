@@ -14,40 +14,139 @@ class Curl extends Base
         $this->outputs['module'] = (!empty($module_name)) ? $module_name : 'Curl';
     }
 
-    public function curlGet($urls)
+    public function curlGet($urls = [])
     {
         $this->outputs['service'] = 'Check Curl Get';
 
-        foreach ($urls AS $url) {
-            $this->outputs['url'] .= $url . '<br>';
+        foreach ($urls as $url) {
+            $this->outputs['url'] .= "<br>{$url}";
 
             try {
                 $ch = curl_init();
-            
+
+                if (is_resource($ch) === false) {
+                    $this->setOutputs([
+                        'status'   => 'ERROR',
+                        'remark'   => 'Can\'t post url : is resource fail',
+                        'response' => $this->start_time
+                    ]);
+                    continue;
+                }
+
+                curl_setopt($ch, CURLOPT_TIMEOUT, 15);
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HEADER, false);
+                curl_setopt($ch, CURLOPT_NOBODY, false);
             
-                $output    = curl_exec($ch);
+                $result    = curl_exec($ch);
                 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             
                 curl_close($ch);
-
-                if ($http_code !== 200) {
-                    $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-                    $this->outputs['remark'] .= '<br><span class="error">Can\'t get url</span>';
-                } else {
-                    // Success
-                    $this->outputs['status'] .= '<br>OK';
-                    $this->outputs['remark'] .= '<br>';
-                }
             } catch (Exception $e) {
-                $this->outputs['status'] .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark'] .= '<br><span class="error">Can\'t get url : ' . $e->getMessage() . '</span>';
+                $this->setOutputs([
+                    'status'   => 'ERROR',
+                    'remark'   => 'Can\'t get url : ' . $e->getMessage(),
+                    'response' => $this->start_time
+                ]);
+                continue;
             }
+
+            if ($http_code !== 200) {
+                $this->setOutputs([
+                    'status'   => 'ERROR',
+                    'remark'   => 'Can\'t get url http code not 200',
+                    'response' => $this->start_time
+                ]);
+                continue;
+            }
+
+            if (empty($result) || !is_object($result)) {
+                $this->setOutputs([
+                    'status'   => 'ERROR',
+                    'remark'   => 'Can\'t get url',
+                    'response' => $this->start_time
+                ]);
+                continue;
+            }
+
+            // Success
+            $this->setOutputs([
+                'status'   => 'OK',
+                'remark'   => '',
+                'response' => $this->start_time
+            ]);
         }
         
-        $this->outputs['response'] += (microtime(true) - $this->start_time);
-        
+        return $this;
+    }
+
+    protected function curlPost($url = [], $params = [])
+    {
+        $this->outputs['service'] = 'Check Curl Post';
+
+        foreach ($urls as $url) {
+            $this->outputs['url'] .= "<br>{$url}";
+
+            $result = '';
+
+            try {
+                $ch = curl_init($url);
+
+                if (is_resource($ch) === false) {
+                    $this->setOutputs([
+                        'status'   => 'ERROR',
+                        'remark'   => 'Can\'t post url : is resource fail',
+                        'response' => $this->start_time
+                    ]);
+                    continue;
+                }
+
+                curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+                
+                $result = curl_exec($ch);
+                $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+                curl_close($ch);
+            } catch (Exception $e) {
+                $this->setOutputs([
+                    'status'   => 'ERROR',
+                    'remark'   => 'Can\'t post url : ' . $e->getMessage(),
+                    'response' => $this->start_time
+                ]);
+                continue;
+            }
+
+            if ($http_code !== 200) {
+                $this->setOutputs([
+                    'status'   => 'ERROR',
+                    'remark'   => 'Can\'t post url http code not 200',
+                    'response' => $this->start_time
+                ]);
+                continue;
+            }
+
+            if (empty($result) || !is_object($result)) {
+                $this->setOutputs([
+                    'status'   => 'ERROR',
+                    'remark'   => 'Can\'t post url',
+                    'response' => $this->start_time
+                ]);
+                continue;
+            }
+
+            // Success
+            $this->setOutputs([
+                'status'   => 'OK',
+                'remark'   => '',
+                'response' => $this->start_time
+            ]);
+        }
+
         return $this;
     }
 }

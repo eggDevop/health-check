@@ -26,24 +26,30 @@ class Socket extends Base
             $socket        = @stream_socket_client($remote_socket, $err_no, $err_str, 2.5, $flags);
 
             if (!$socket) {
-                $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to Socket</span>';
-                $this->outputs['response'] += (microtime(true) - $this->start_time);
+                $this->setOutputs([
+                    'status'   => 'ERROR',
+                    'remark'   => 'Can\'t Connect to Socket',
+                    'response' => $this->start_time
+                ]);
 
                 return $this;
             }
         } catch (Exception $e) {
-            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to Socket : ' . $e->getMessage() . '</span>';
-            $this->outputs['response'] += (microtime(true) - $this->start_time);
+            $this->setOutputs([
+                'status'   => 'ERROR',
+                'remark'   => 'Can\'t Connect to Socket : ' . $e->getMessage(),
+                'response' => $this->start_time
+            ]);
 
             return $this;
         }
 
         // Success
-        $this->outputs['status']   .= '<br>OK';
-        $this->outputs['remark']   .= '<br>';
-        $this->outputs['response'] += (microtime(true) - $this->start_time);
+        $this->setOutputs([
+            'status'   => 'OK',
+            'remark'   => '',
+            'response' => $this->start_time
+        ]);
         
         return $this;
     }

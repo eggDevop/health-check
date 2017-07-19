@@ -23,9 +23,11 @@ class Redis extends Base
 
         // Validate parameter
         if (false === $this->validParams($conf)) {
-            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']   .= '<br><span class="error">Require parameter (' . implode(',', $this->require_config) . ')</span>';
-            $this->outputs['response'] += (microtime(true) - $this->start_time);
+            $this->setOutputs([
+                'status'   => 'ERROR',
+                'remark'   => 'Require parameter (' . implode(',', $this->require_config) . ')',
+                'response' => $this->start_time
+            ]);
 
             return $this;
         }
@@ -39,24 +41,30 @@ class Redis extends Base
             ]);
         
             if (!$this->redis) {
-                $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-                $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to Redis</span>';
-                $this->outputs['response'] += (microtime(true) - $this->start_time);
+                $this->setOutputs([
+                    'status'   => 'ERROR',
+                    'remark'   => 'Can\'t Connect to Redis',
+                    'response' => $this->start_time
+                ]);
 
                 return $this;
             }
         } catch (Exception $e) {
-            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to Redis : ' . $e->getMessage() . '</span>';
-            $this->outputs['response'] += (microtime(true) - $this->start_time);
+            $this->setOutputs([
+                'status'   => 'ERROR',
+                'remark'   => 'Can\'t Connect to Redis : ' . $e->getMessage(),
+                'response' => $this->start_time
+            ]);
 
             return $this;
         }
 
         // Success
-        $this->outputs['status']   .= '<br>OK';
-        $this->outputs['remark']   .= '<br>';
-        $this->outputs['response'] += (microtime(true) - $this->start_time);
+        $this->setOutputs([
+            'status'   => 'OK',
+            'remark'   => '',
+            'response' => $this->start_time
+        ]);
 
         return $this;
     }
@@ -64,9 +72,11 @@ class Redis extends Base
     public function totalQueue($keys, $max_job = null)
     {
         if (!$this->redis) {
-            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']   .= '<br><span class="error">Can\'t Connect to Redis</span>';
-            $this->outputs['response'] += (microtime(true) - $this->start_time);
+            $this->setOutputs([
+                'status'   => 'ERROR',
+                'remark'   => 'Can\'t Connect to Redis',
+                'response' => $this->start_time
+            ]);
 
             return $this;
         }
@@ -79,18 +89,22 @@ class Redis extends Base
 
         // Check Max Queue
         if (!empty($max_job) && $total > $max_job) {
-            $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
-            $this->outputs['remark']   .= '<br><span class="error">Queues > {$max_job}</span>';
-            $this->outputs['response'] += (microtime(true) - $this->start_time);
+            $this->setOutputs([
+                'status'   => 'ERROR',
+                'remark'   => "Queues > {$max_job}",
+                'response' => $this->start_time
+            ]);
             
             return $this;
         }
 
         // Success
-        $this->outputs['service']  .= "<br>Number of Queue : {$total}";
-        $this->outputs['status']   .= '<br>OK';
-        $this->outputs['remark']   .= '<br>';
-        $this->outputs['response'] += (microtime(true) - $this->start_time);
+        $this->setOutputs([
+            'service'         => "Number of Queue : {$total}",
+            'status'   => 'OK',
+            'remark'   => '',
+            'response' => $this->start_time
+        ]);
 
         return $this;
     }
