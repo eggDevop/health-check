@@ -161,16 +161,17 @@ class Output
                 : '<center><div class="circle circle-error blink"></div></center>';
 
             // Remove tag <br>, if it frist
-            $value['status'] = $this->removeFristBr($value['status']);
-            $value['remark'] = $this->removeFristBr($value['remark']);
+            $value['status']   = $this->removeFristBr($value['status']);
+            $value['remark']   = $this->removeFristBr($value['remark']);
+            $value['response'] = number_format($value['response'], 4, ',', '.');
 
             $html .= "</td>
-                <td width=\"15%\">{$value['module']}</td>
-                <td width=\"20%\">{$value['service']}</td>
-                <td width=\"25%\">{$value['url']}</td>
-                <td width=\"6%\">{$value['response']}</td>
-                <td width=\"9%\">{$value['status']}</td>
-                <td width=\"20%\">{$value['remark']}</td>
+                <td width=\"30px\">{$value['module']}</td>
+                <td width=\"95px\">{$value['service']}</td>
+                <td width=\"400px\">{$value['url']}</td>
+                <td width=\"570px\">{$value['response']}</td>
+                <td width=\"80px\">{$value['status']}</td>
+                <td width=\"\">{$value['remark']}</td>
             </tr>";
         }
 

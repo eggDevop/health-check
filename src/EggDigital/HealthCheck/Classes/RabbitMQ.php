@@ -71,11 +71,12 @@ class RabbitMQ extends Base
     }
 
     // Method for get total queue in rabbitmq
-    public function totalQueue($queue_name, $max_job = null)
+    public function queue($queue_name, $max_job = null, $check_worker = false)
     {
         if (!$this->connection) {
             $this->setOutputs([
                 'service'  => "Number of Queue <b>{$queue_name}</b>",
+                'url'      => '',
                 'status'   => 'ERROR',
                 'remark'   => 'Can\'t Connect to RabbitMQ',
                 'response' => $this->start_time
@@ -87,11 +88,12 @@ class RabbitMQ extends Base
         try {
             $this->channel = $this->connection->channel();
 
-            list(,$msg_count,) = $this->channel->queue_declare($queue_name, true, false, false, false);
+            list(,$msg_count, $consumer_count) = $this->channel->queue_declare($queue_name, true, false, false, false);
 
         } catch (AMQPProtocolChannelException $e) {
             $this->setOutputs([
                 'service'  => "Number of Queue <b>{$queue_name}</b>",
+                'url'      => '',
                 'status'   => 'ERROR',
                 'remark'   => 'Can\'t Get Queue Name : ' . $e->getMessage(),
                 'response' => $this->start_time
@@ -109,6 +111,7 @@ class RabbitMQ extends Base
         if (!isset($max_job) && $msg_count > $max_job) {
             $this->setOutputs([
                 'service'  => "Number of Queue <b>{$queue_name}</b> : {$msg_count}</b>",
+                'url'      => "Worker (Total: {$consumer_count})",
                 'status'   => 'ERROR',
                 'remark'   => "Queues > {$max_job}",
                 'response' => $this->start_time
@@ -120,54 +123,9 @@ class RabbitMQ extends Base
         // Success
         $this->setOutputs([
             'service'  => "Number of Queue <b>{$queue_name}</b> : {$msg_count}",
+            'url'      => "Worker (Total: {$consumer_count})",
             'status'   => 'OK',
             'remark'   => !empty($max_job) ? "Queues > {$max_job} alert" : '',
-            'response' => $this->start_time
-        ]);
-
-        return $this;
-    }
-
-    // This method want to get amount worker
-    public function workerOnQueue($queue_name)
-    {
-        if (!$this->connection) {
-            $this->setOutputs([
-                'service'  => "Total Worker on Queue <b>{$queue_name}</b>",
-                'status'   => 'ERROR',
-                'remark'   => "Can\'t Connect to RabbitMQ",
-                'response' => $this->start_time
-            ]);
-
-            return $this;
-        }
-
-        try {
-            $this->channel = $this->connection->channel();
-
-            list(,,$consumer_count) = $this->channel->queue_declare($queue_name, true, false, false, false);
-
-        } catch (AMQPProtocolChannelException $e) {
-            $this->setOutputs([
-                'service'  => "Total Worker on Queue <b>{$queue_name}</b>",
-                'status'   => 'ERROR',
-                'remark'   => 'Can\'t Get Worker : ' . $e->getMessage(),
-                'response' => $this->start_time
-            ]);
-
-            // Re connect channel
-            $this->channel = $this->connection->channel();
-
-            $this->outputs['response'] += (microtime(true) - $this->start_time);
-
-            return $this;
-        }
-
-        // Success
-        $this->setOutputs([
-            'service'  => "Total Worker on Queue <b>{$queue_name}</b> : {$consumer_count}",
-            'status'   => 'OK',
-            'remark'   => '',
             'response' => $this->start_time
         ]);
 
