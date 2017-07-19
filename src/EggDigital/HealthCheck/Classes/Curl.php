@@ -81,7 +81,7 @@ class Curl extends Base
         return $this;
     }
 
-    protected function curlPost($url = [], $params = [])
+    public function curlPost($url = [], $params = [])
     {
         $this->outputs['service'] = 'Check Curl Post';
 
