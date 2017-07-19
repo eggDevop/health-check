@@ -116,12 +116,12 @@ class Output
             '<table class="table table-sm table-striped table-hover table-responsive table-sm">
                 <thead class="thead-inverse">
                     <tr>
-                        <th colspan="2" width="20%"></th>
-                        <th width="20%">Service</th>
-                        <th width="25%">Url</th>
-                        <th width="6%">Time(s)</th>
-                        <th width="9%">Status</th>
-                        <th width="20%">Remark</th>
+                        <th colspan="2" width="125px"></th>
+                        <th width="95400pxpx" class="text-center">Service</th>
+                        <th width="570px" class="text-center">Url</th>
+                        <th width="80px" class="text-center">Time(s)</th>
+                        <th width="100px" class="text-center">Status</th>
+                        <th width="" class="text-center">Remark</th>
                     </tr>
                 </thead>
                 <tbody>'
@@ -155,7 +155,7 @@ class Output
         $html = '';
         foreach ($datas as $value) {
             $html .= '<tr>
-                        <td width="5%">';
+                        <td width="30px">';
 
             $html .= (strpos($value['status'], 'ERROR') === false )
                 ? '<center><div class="circle circle-success"></div></center>'
@@ -167,11 +167,11 @@ class Output
             $value['response'] = number_format($value['response'], 4, '.', ',');
 
             $html .= "</td>
-                <td width=\"30px\">{$value['module']}</td>
-                <td width=\"95px\">{$value['service']}</td>
-                <td width=\"400px\">{$value['url']}</td>
-                <td width=\"570px\" class=\"text-center\">{$value['response']}</td>
-                <td width=\"80px\" class=\"text-center\">{$value['status']}</td>
+                <td width=\"95px\">{$value['module']}</td>
+                <td width=\"400px\">{$value['service']}</td>
+                <td width=\"570px\">{$value['url']}</td>
+                <td width=\"80px\" class=\"text-center\">{$value['response']}</td>
+                <td width=\"100px\" class=\"text-center\">{$value['status']}</td>
                 <td width=\"\">{$value['remark']}</td>
             </tr>";
         }
