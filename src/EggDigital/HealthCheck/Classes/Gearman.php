@@ -131,7 +131,7 @@ class Gearman extends Base
         if (!isset($max_job) && $this->gm_status[$queue_name]['0'] > $max_job) {
             $this->setOutputs([
                 'service'  => "Number of Queue <b>{$queue_name}</b>: {$this->gm_status[$queue_name]['0']}",
-                'url'      => "Worker (Running: {$this->gm_status[$queue_name]['1']} , Total: {$this->gm_status[$queue_name]['2']})",
+                'url'      => "Number of Worker (Running: {$this->gm_status[$queue_name]['1']} , Total: {$this->gm_status[$queue_name]['2']})",
                 'status'   => 'ERROR',
                 'remark'   => "Queues > {$max_job}</span>",
                 'response' => $this->start_time
@@ -144,7 +144,7 @@ class Gearman extends Base
         $this->setOutputs([
             'service'  => "Number of Queue <b>{$queue_name}</b> : {$this->gm_status[$queue_name]['0']}",
             'status'   => 'OK',
-            'url'      => "Worker (Running: {$this->gm_status[$queue_name]['1']} , Total: {$this->gm_status[$queue_name]['2']})",
+            'url'      => "Number of Worker (Running: {$this->gm_status[$queue_name]['1']} , Total: {$this->gm_status[$queue_name]['2']})",
             'remark'   => !empty($max_job) ? "Queues > {$max_job} alert" : '',
             'response' => $this->start_time
         ]);

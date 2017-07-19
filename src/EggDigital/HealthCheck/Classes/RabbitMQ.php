@@ -111,7 +111,7 @@ class RabbitMQ extends Base
         if (!isset($max_job) && $msg_count > $max_job) {
             $this->setOutputs([
                 'service'  => "Number of Queue <b>{$queue_name}</b> : {$msg_count}</b>",
-                'url'      => "Worker (Total: {$consumer_count})",
+                'url'      => "Number of Worker (Total: {$consumer_count})",
                 'status'   => 'ERROR',
                 'remark'   => "Queues > {$max_job}",
                 'response' => $this->start_time
@@ -123,7 +123,7 @@ class RabbitMQ extends Base
         // Success
         $this->setOutputs([
             'service'  => "Number of Queue <b>{$queue_name}</b> : {$msg_count}",
-            'url'      => "Worker (Total: {$consumer_count})",
+            'url'      => "Number of Worker (Total: {$consumer_count})",
             'status'   => 'OK',
             'remark'   => !empty($max_job) ? "Queues > {$max_job} alert" : '',
             'response' => $this->start_time

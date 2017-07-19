@@ -70,6 +70,7 @@ class Output
             . $this->getTitle($title)
             . $this->getTable($datas)
             . $this->getSummary($datas) .
+                '<br><br><br>' .
             '</div>';
 
         return $body;
@@ -163,14 +164,14 @@ class Output
             // Remove tag <br>, if it frist
             $value['status']   = $this->removeFristBr($value['status']);
             $value['remark']   = $this->removeFristBr($value['remark']);
-            $value['response'] = number_format($value['response'], 4, ',', '.');
+            $value['response'] = number_format($value['response'], 4, '.', ',');
 
             $html .= "</td>
                 <td width=\"30px\">{$value['module']}</td>
                 <td width=\"95px\">{$value['service']}</td>
                 <td width=\"400px\">{$value['url']}</td>
-                <td width=\"570px\">{$value['response']}</td>
-                <td width=\"80px\">{$value['status']}</td>
+                <td width=\"570px\" class=\"text-center\">{$value['response']}</td>
+                <td width=\"80px\" class=\"text-center\">{$value['status']}</td>
                 <td width=\"\">{$value['remark']}</td>
             </tr>";
         }
