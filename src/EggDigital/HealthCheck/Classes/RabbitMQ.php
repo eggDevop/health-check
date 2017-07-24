@@ -108,7 +108,7 @@ class RabbitMQ extends Base
         }
 
         // Check Max Queue
-        if (!isset($max_job) && $msg_count > $max_job) {
+        if (isset($max_job) && $msg_count > $max_job) {
             $this->setOutputs([
                 'service'  => "Number of Queue <b>{$queue_name}</b> : {$msg_count}</b>",
                 'url'      => "Number of Worker (Total: {$consumer_count})",
