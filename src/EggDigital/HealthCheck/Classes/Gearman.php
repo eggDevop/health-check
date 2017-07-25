@@ -128,7 +128,7 @@ class Gearman extends Base
         }
         
         // Check Max Queue
-        if (!isset($max_job) && $this->gm_status[$queue_name]['0'] > $max_job) {
+        if (isset($max_job) && $this->gm_status[$queue_name]['0'] > $max_job) {
             $this->setOutputs([
                 'service'  => "Number of Queue <b>{$queue_name}</b>: {$this->gm_status[$queue_name]['0']}",
                 'url'      => "Number of Worker (Running: {$this->gm_status[$queue_name]['1']} , Total: {$this->gm_status[$queue_name]['2']})",
