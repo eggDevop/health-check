@@ -52,7 +52,7 @@ class Curl extends Base
             return $this;
         }
 
-        if ($http_code !== 200 || $http_code !== 301) {
+        if ($http_code !== 200 && $http_code !== 301) {
             $this->setOutputs([
                 'status'   => 'ERROR',
                 'remark'   => 'Can\'t get url http code not 200 or 301',
@@ -62,7 +62,7 @@ class Curl extends Base
             return $this;
         }
 
-        if (empty($result) || !is_object($result)) {
+        if (empty($result)) {
             $this->setOutputs([
                 'status'   => 'ERROR',
                 'remark'   => 'Can\'t get url',
@@ -122,7 +122,7 @@ class Curl extends Base
             return $this;
         }
 
-        if ($http_code !== 200 || $http_code !== 301) {
+        if ($http_code !== 200 && $http_code !== 301) {
             $this->setOutputs([
                 'status'   => 'ERROR',
                 'remark'   => 'Can\'t post url http code not 200 or 301',
@@ -132,7 +132,7 @@ class Curl extends Base
             return $this;
         }
 
-        if (empty($result) || !is_object($result)) {
+        if (empty($result)) {
             $this->setOutputs([
                 'status'   => 'ERROR',
                 'remark'   => 'Can\'t post url',
