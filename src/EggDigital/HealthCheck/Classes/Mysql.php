@@ -51,7 +51,7 @@ class Mysql extends Base
 
                 return $this;
             }
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $this->setOutputs([
                 'status'   => 'ERROR',
                 'remark'   => 'Can\'t Connect to Database : ' . $e->getMessage(),
@@ -71,9 +71,9 @@ class Mysql extends Base
         return $this;
     }
 
-    public function query($sql)
+    public function query($sql = null)
     {
-        $this->outputs['service'] = 'Check Query Datas';
+        $this->outputs['service'] .= '<br>Check Query Datas';
 
         if (!$this->conn) {
             $this->setOutputs([
@@ -85,10 +85,13 @@ class Mysql extends Base
             return $this;
         }
 
+        // Get SQL
+        $sql = (!empty($sql)) ? $sql : 'SELECT CURDATE()';
+
         // Query
         try {
             $this->conn->query($sql);
-        } catch (PDOException  $e) {
+        } catch (\PDOException  $e) {
             $this->setOutputs([
                 'status'   => 'ERROR',
                 'remark'   => 'Can\'t Query Datas : ' . $e->getMessage(),
