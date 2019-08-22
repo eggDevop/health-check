@@ -131,4 +131,277 @@ class RabbitMQ extends Base
 
         return $this;
     }
+
+    public function apiconnect($conf)
+    {
+        $this->outputs['service'] = 'Check Connection';
+        $checkRabbbitConnect = $this->curlAPI($conf,$conf['apihealthcheck']['apichkconnect']);
+
+        if (!$checkRabbbitConnect['response']) {
+            $this->setOutputs([
+                'status'   => 'ERROR',
+                'remark'   => 'Can\'t Connect to RabbitMQ',
+                'response' => $this->start_time
+            ]);
+
+            return $this;
+        }
+
+        $checkRabbbitConnects = json_decode($checkRabbbitConnect['response']);
+
+        if ($checkRabbbitConnects->error) {
+            $this->setOutputs([
+                'status'   => 'ERROR',
+                'remark'   => 'Not authorised',
+                'response' => $this->start_time
+            ]);
+
+            return $this;
+        }
+
+        foreach ($checkRabbbitConnects as $key => $value) {
+            $this->setOutputs([
+                'RabbitMQ Server' => [
+                        'service' =>'RabbitMQ Server Status',
+                        'url' => $conf['host']." (".$value->name.")"
+                    ]
+            ]);
+            if ($value->running == true) { 
+                $status .= '<br>'. 'OK';
+                $remark .= '<br>';
+            }else{
+                $status .= '<br><span class="error">ERROR</span>';
+                $remark .= '<br><span class="error">'. $value->name .' not working.</span>';
+            }
+        }
+
+        $this->setOutputs([
+            'RabbitMQ Server' => [
+                'status' => $status,
+                'remark' => $remark,
+                'response' => $checkRabbbitConnect['info']['total_time']
+            ]
+        ]);
+
+        return $this;
+    }
+
+    public function apiqueue($queue_name, $max_job = null, $conf)
+    {
+        $checkRabbbitQueue = $this->curlAPI($conf,$conf['apihealthcheck']['apichkqueue']);
+        $checkRabbbitQueues = json_decode($checkRabbbitQueue['response']);
+        if ($checkRabbbitQueues) {
+            foreach ($checkRabbbitQueues as $key => $value) {
+                if ($value->name == $queue_name) {
+
+                    if (isset($max_job) && $value->backing_queue_status->len > $max_job) {
+                        $this->setOutputs([
+                            'service'  => "Total queue amount of : <b>{$queue_name}</b> = {$value->backing_queue_status->len}",
+                            'url'      => "Number of Worker (Total: {$value->consumers})",
+                            'status'   => 'ERROR',
+                            'remark'   => "Queues > {$max_job}"
+                        ]);
+                        
+                        return $this;
+                    }else{
+                        $this->setOutputs([
+                            'service'  => "Total queue amount of : <b>{$queue_name}</b> = {$value->backing_queue_status->len}",
+                            'url'      => "Number of Worker (Total: {$value->consumers})",
+                            'status'   => 'OK',
+                            'remark'   => !empty($max_job) ? "Queues > {$max_job} alert" : ''
+                        ]);
+                    }
+                }
+            }
+        }else{
+            $this->setOutputs([
+                'service'  => "Total queue amount of : <b>{$queue_name}</b> = 0",
+                'url'      => "Number of Worker (Total: Not connect)",
+                'status'   => 'ERROR',
+                'remark'   => "Can't Connect to RabbitMQ"
+            ]);
+        }
+        
+
+        return $this;
+    }
+
+    public function curlAPI($data,$apitype)
+    {
+        $auth = base64_encode($data['username'].":".$data['password']);
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_PORT => "15672",
+          CURLOPT_URL => "http://".$data['host'].":".$data['port']."/".$apitype,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => "",
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 10,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => "GET",
+          CURLOPT_POSTFIELDS => "",
+          CURLOPT_HTTPHEADER => array(
+            "Authorization: Basic ".$auth,
+            "Content-Type: application/x-www-form-urlencoded"
+          ),
+        ));
+
+        $resp['response'] = curl_exec($curl);
+        $resp['info'] = curl_getinfo($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        return ($resp)?$resp:$err;
+    }
+
+    public function queueconnect($conf)
+    {
+        $this->outputs['service'] = 'Check Connection';
+        foreach ($conf['pathfileshealthcheck'] as $key => $value) {
+            $jsondata = json_decode(file_get_contents($value));
+            $currentDate = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s")));
+            $periodcurrentDate = date("Y-m-d H:i:s", strtotime('-3 minutes'));
+            $flagDate = date("Y-m-d H:i:s", strtotime($jsondata->status->datetime));
+
+            if (($flagDate >= $periodcurrentDate) && ($flagDate <= $currentDate)){
+                if (isset($jsondata)) {
+                    foreach ($jsondata->status->data as $k => $value) {
+                        $service .= $key . ' ➡ RebbitMQ' . '<br>';
+                        if ($value == "ok") { 
+                            $url .= $k . '<br>';
+                            $status .= '<br>'. 'OK';
+                            $remark .= '<br>';
+                        }else{
+                            $url .= $k . '<br>';
+                            $status .= '<br><span class="error">ERROR</span>';
+                            $remark .= '<br><span class="error">'. $key . ' ➡ RebbitMQ not connect.</span>';
+                        }
+
+                    }
+
+                }else{
+                    $service .= $key . ' ➡ RebbitMQ' . '<br>';
+                    $url .= $k . '<br>';
+                    $status .= '<br><span class="error">ERROR</span>';
+                    $remark .= '<br><span class="error">Health check files status not found.</span>';
+                }
+            }else{
+                $service .= $key . ' ➡ RebbitMQ' . '<br>';
+                $url .= $k . '<br>';
+                $status .= '<br><span class="error">ERROR</span>';
+                $remark .= '<br><span class="error">Health check not update.</span>';
+            }
+        }
+
+        $this->setOutputs([
+            'RabbitMQ Server' => [
+                'service' => $service,
+                'url' => $url,
+                'status' => $status,
+                'remark' => $remark
+            ]
+        ]);
+
+        return $this;
+    }
+
+    public function sftpconnect($conf)
+    {
+        $this->outputs['service'] = 'Check Connection';
+        foreach ($conf['pathfileshealthcheck'] as $key => $value) {
+            $jsondata = json_decode(file_get_contents($value));
+            $currentDate = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s")));
+            $periodcurrentDate = date("Y-m-d H:i:s", strtotime('-3 minutes'));
+            $flagDate = date("Y-m-d H:i:s", strtotime($jsondata->status->datetime));
+ 
+            if (isset($jsondata)) {
+                if (($flagDate >= $periodcurrentDate) && ($flagDate <= $currentDate)){
+                    foreach ($jsondata->status->data as $k => $value) {
+                        $service .= $key . ' ➡ SFTP Path' . '<br>';
+                        if ($value == "ok") { 
+                            $url .= $k . '<br>';
+                            $status .= '<br>'. 'OK';
+                            $remark .= '<br>';
+                        }else{
+                            $url .= $k . '<br>';
+                            $status .= '<br><span class="error">ERROR</span>';
+                            $remark .= '<br><span class="error">'. $key . ' ➡ SFTP path can not connect.</span>';
+                        }
+                    }
+                }else{
+                    $service .= $key . ' ➡ SFTP Path' . '<br>';
+                    $url .= $k . '<br>';
+                    $status .= '<br><span class="error">ERROR</span>';
+                    $remark .= '<br><span class="error">Health check not update.</span>';   
+                }
+            }else{
+                $service .= $key . ' ➡ SFTP Path' . '<br>';
+                $url .= $k . '<br>';
+                $status .= '<br><span class="error">ERROR</span>';
+                $remark .= '<br><span class="error">Health check files status not found.</span>';
+            }
+        }
+
+        $this->setOutputs([
+            'RabbitMQ Server' => [
+                'service' => $service,
+                'url' => $url,
+                'status' => $status,
+                'remark' => $remark
+            ]
+        ]);
+
+        return $this;
+    }
+
+    public function gatewayconnect($conf)
+    {
+        $this->outputs['service'] = 'Check Connection';
+        foreach ($conf['pathfileshealthcheck'] as $key => $value) {
+            $jsondata = json_decode(file_get_contents($value));
+            $currentDate = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s")));
+            $periodcurrentDate = date("Y-m-d H:i:s", strtotime('-3 minutes'));
+            $flagDate = date("Y-m-d H:i:s", strtotime($jsondata->status->datetime));
+ 
+            if (isset($jsondata)) {
+                if (($flagDate >= $periodcurrentDate) && ($flagDate <= $currentDate)){
+                    foreach ($jsondata->status->data as $k => $value) {
+                        $service .= $key . ' ➡ SMS Gateway' . '<br>';
+                        if ($value == "ok") { 
+                            $url .= $k . '<br>';
+                            $status .= '<br>'. 'OK';
+                            $remark .= '<br>';
+                        }else{
+                            $url .= $k . '<br>';
+                            $status .= '<br><span class="error">ERROR</span>';
+                            $remark .= '<br><span class="error">'. $key . ' ➡ SMS Gateway can not connect.</span>';
+                        }
+                    }
+                }else{
+                    $service .= $key . ' ➡ SMS Gateway' . '<br>';
+                    $url .= $k . '<br>';
+                    $status .= '<br><span class="error">ERROR</span>';
+                    $remark .= '<br><span class="error">Health check not update.</span>';   
+                }
+            }else{
+                $service .= $key . ' ➡ SMS Gateway' . '<br>';
+                $url .= $k . '<br>';
+                $status .= '<br><span class="error">ERROR</span>';
+                $remark .= '<br><span class="error">Health check files status not found.</span>';
+            }
+        }
+
+        $this->setOutputs([
+            'RabbitMQ Server' => [
+                'service' => $service,
+                'url' => $url,
+                'status' => $status,
+                'remark' => $remark
+            ]
+        ]);
+
+        return $this;
+    }
 }
