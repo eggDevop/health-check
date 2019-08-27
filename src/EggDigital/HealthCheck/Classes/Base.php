@@ -32,17 +32,37 @@ abstract class Base
 
     protected function setOutputs($datas = [])
     {
-        $error = false;
-        if (array_key_exists('status', $datas) && $datas['status'] === 'ERROR') {
-            $error = ture;
-        }
+        
+        if (isset($datas['RabbitMQ Server'])) {
 
-        foreach ($datas as $key => $value) {
-            if (isset($this->outputs[$key]) && $key !== 'response') {
-                $this->outputs[$key] .= ($error) ? "<br><span class=\"error\">{$value}</span>" : "<br>{$value}";
-            } else {
-                $this->outputs['response'] += (microtime(true) - $value);
+            $error = false;
+            if (array_key_exists('status', $datas['RabbitMQ Server']) && $datas['RabbitMQ Server']['status'] === 'ERROR') {
+                $error = true;
             }
+
+            foreach ($datas['RabbitMQ Server'] as $key => $value) {
+                if (isset($this->outputs[$key]) && $key !== 'response') {
+                    $this->outputs[$key] .= ($error) ? "<br><span class=\"error\">{$value}</span>" : "<br>{$value}";
+                } else {
+                    $this->outputs['response'] .= $value;
+                }
+            }
+
+        }else{
+
+            $error = false;
+            if (array_key_exists('status', $datas) && $datas['status'] === 'ERROR') {
+                $error = true;
+            }
+
+            foreach ($datas as $key => $value) {
+                if (isset($this->outputs[$key]) && $key !== 'response') {
+                    $this->outputs[$key] .= ($error) ? "<br><span class=\"error\">{$value}</span>" : "<br>{$value}";
+                } else {
+                    $this->outputs['response'] += (microtime(true) - $value);
+                }
+            }
+
         }
     }
 }
