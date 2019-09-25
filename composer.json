@@ -2,7 +2,7 @@
     "name": "eggdevop/health-check",
     "description": "health check is monitor tool.",
     "type": "project",
-    "license": "Apache License 2.0",
+    "license": "BSD-3-Clause",
     "keywords": [
         "health",
         "monitor"
