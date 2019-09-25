@@ -421,4 +421,53 @@ class File extends Base
     }
 
     //========== Start : Support Method ==========/
+
+    public function sftpconnect($conf)
+    {
+        $this->outputs['service'] = 'Check Connection';
+        foreach ($conf['pathfileshealthcheck'] as $key => $value) {
+            $jsondata = json_decode(file_get_contents($value));
+            $currentDate = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s")));
+            $periodcurrentDate = date("Y-m-d H:i:s", strtotime('-3 minutes'));
+            $flagDate = date("Y-m-d H:i:s", strtotime($jsondata->status->datetime));
+ 
+            if (isset($jsondata)) {
+                if (($flagDate >= $periodcurrentDate) && ($flagDate <= $currentDate)){
+                    foreach ($jsondata->status->data as $k => $value) {
+                        $service .= $key . ' ➡ SFTP Path' . '<br>';
+                        if ($value == "ok") { 
+                            $url .= $k . '<br>';
+                            $status .= '<br>'. 'OK';
+                            $remark .= '<br>';
+                        }else{
+                            $url .= $k . '<br>';
+                            $status .= '<br><span class="error">ERROR</span>';
+                            $remark .= '<br><span class="error">'. $key . ' ➡ SFTP path can not connect.</span>';
+                        }
+                    }
+                }else{
+                    $service .= $key . ' ➡ SFTP Path' . '<br>';
+                    $url .= $k . '<br>';
+                    $status .= '<br><span class="error">ERROR</span>';
+                    $remark .= '<br><span class="error">Health check not update.</span>';   
+                }
+            }else{
+                $service .= $key . ' ➡ SFTP Path' . '<br>';
+                $url .= $k . '<br>';
+                $status .= '<br><span class="error">ERROR</span>';
+                $remark .= '<br><span class="error">Health check files status not found.</span>';
+            }
+        }
+
+        $this->setOutputs([
+            'RabbitMQ Server' => [
+                'service' => $service,
+                'url' => $url,
+                'status' => $status,
+                'remark' => $remark
+            ]
+        ]);
+
+        return $this;
+    }
 }
