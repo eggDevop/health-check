@@ -257,7 +257,6 @@ class File extends Base
         }
         
         foreach ($paths as $path) {
-            $this->outputs['url'] .= "{$path}<br>";
 
             // Check directory exists
             if (!$this->pathFileExists($path)) {
@@ -270,6 +269,8 @@ class File extends Base
             $files      = scandir($path, 1);
             $files      = array_diff($files, ['.', '..']);
             $total_file = count($files);
+
+            $this->outputs['url'] .= "{$path}  (Total File: {$total_file})<br>"; 
 
             if ($total_file === 0) {
                 $this->setOutputs([

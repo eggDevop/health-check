@@ -151,4 +151,57 @@ class Gearman extends Base
 
         return $this;
     }
+
+    public function workerconnect($conf)
+    {
+         $this->outputs['service'] = 'Check Connection';
+
+            $jsondata = json_decode(file_get_contents($conf));
+            $currentDate = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s")));
+            $periodcurrentDate = date("Y-m-d H:i:s", strtotime('-3 minutes'));
+            $flagDate = date("Y-m-d H:i:s", strtotime($jsondata->status->datetime));
+            if (isset($jsondata)) {
+                if (($flagDate >= $periodcurrentDate) && ($flagDate <= $currentDate)){
+                    if($jsondata->status->status = 200){
+                        $this->outputs['status']   .= '<br>OK';
+                        $this->outputs['remark']   .= '<br>'.$jsondata->status->message;
+                        $this->outputs['response'] += (microtime(true) - $this->start_time);
+                        foreach ($jsondata->status->data as $worker => $v) {
+                            if ($v->status == 200) { 
+                                $this->setOutputs([
+                                    'service'   => $worker. ' ➡ Gearman'  ,
+                                    'status'   => 'OK',
+                                    'remark'   => $v->message,
+                                    'response' => $this->start_time
+                                ]);
+                            }else{
+                                $this->setOutputs([
+                                    'service'   => $worker. ' ➡ Gearman'  ,
+                                    'status'   => '<span class="error">ERROR</span>',
+                                    'remark'   => $v->message,
+                                    'response' => $this->start_time
+                                ]);
+                            }
+                        }
+                    }else{
+                        $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+                        $this->outputs['remark']   .= '<br>'.$jsondata->status->message;
+                        $this->outputs['response'] += (microtime(true) - $this->start_time);
+                    }
+                    
+                }else{
+                    $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+                    $this->outputs['remark']   .= '<br>'.'<span class="error">Health check not update.</span>';
+                    $this->outputs['response'] += (microtime(true) - $this->start_time);
+                }
+            }else{
+                $this->outputs['status']   .= '<br><span class="error">ERROR</span>';
+                $this->outputs['remark']   .= '<br>'.'<span class="error">Health check files status not found.</span>';
+                $this->outputs['response'] += (microtime(true) - $this->start_time);
+            }
+
+        return $this;
+
+    }
+    
 }
